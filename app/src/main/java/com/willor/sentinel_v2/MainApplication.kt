@@ -1,4 +1,4 @@
-package com.willor.base_compose_di_eznav
+package com.willor.sentinel_v2
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

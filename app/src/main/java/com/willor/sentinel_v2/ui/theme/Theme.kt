@@ -1,4 +1,4 @@
-package com.willor.base_compose_di_eznav.ui.theme
+package com.willor.sentinel_v2.ui.theme
 
 import android.app.Activity
 import android.os.Build
