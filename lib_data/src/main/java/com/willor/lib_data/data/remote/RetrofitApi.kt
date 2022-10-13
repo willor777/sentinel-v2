@@ -17,3 +17,8 @@ object RetrofitApi {
 
 
 }
+
+
+fun main() {
+
+}

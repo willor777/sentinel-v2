@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.willor.sentinel_v2">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
 
-<!-- DaggerHilt Stuff -->
-<!-- android:name=".MainApplication" is there for DaggerHilt -->
     <application
         android:name="com.willor.sentinel_v2.MainApplication"
         android:allowBackup="true"
