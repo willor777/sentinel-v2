@@ -1,11 +1,11 @@
-package com.willor.lib_data.domain.dataobjs.responses.uoa_page_resp
+package com.willor.lib_data.domain.dataobjs.responses.options_overview_resp
 
 
 import com.google.gson.annotations.SerializedName
 
-data class UoaPageResp(
+data class OptionsOverview(
     @SerializedName("data")
-    val data: UnusualOptionsPage,
+    val `data`: Data,
     @SerializedName("lastUpdated")
     val lastUpdated: Long
 )

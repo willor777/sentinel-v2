@@ -1,11 +1,11 @@
-package com.willor.lib_data.domain.dataobjs.responses.chart_resp
+package com.willor.lib_data.domain.dataobjs.responses.popular_wl_search_resp
 
 
 import com.google.gson.annotations.SerializedName
 
-data class StockChartResp(
+data class PopularWatchlistSearch(
     @SerializedName("data")
-    val `data`: Data,
+    val `data`: List<Data>,
     @SerializedName("lastUpdated")
     val lastUpdated: Long
 )

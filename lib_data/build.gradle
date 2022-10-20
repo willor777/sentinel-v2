@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
-        minSdk 26
-        targetSdk 32
+        minSdk 25
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -52,7 +52,7 @@ dependencies {
 
     // Room
     implementation "androidx.room:room-runtime:2.4.3"
-
+    implementation "androidx.room:room-ktx:2.4.3"
     kapt "androidx.room:room-compiler:2.4.3"
 
     // Datastore preferences

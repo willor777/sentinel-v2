@@ -1,11 +1,11 @@
-package com.willor.lib_data.domain.dataobjs.responses.stock_snr_levels_resp
+package com.willor.lib_data.domain.dataobjs.responses.major_indices_resp
 
 
 import com.google.gson.annotations.SerializedName
 
-data class StockSnrLevelsResp(
+data class MajorIndices(
     @SerializedName("data")
-    val `data`: Data,
+    val `data`: List<Index>,
     @SerializedName("lastUpdated")
     val lastUpdated: Long
 )

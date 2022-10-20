@@ -1,11 +1,11 @@
-package com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp
+package com.willor.lib_data.domain.dataobjs.responses.uoa_page_resp
 
 
 import com.google.gson.annotations.SerializedName
 
-data class EtfQuoteResp(
+data class UoaPage(
     @SerializedName("data")
-    val `data`: Data,
+    val data: UnusualOptionsPage,
     @SerializedName("lastUpdated")
     val lastUpdated: Long
 )

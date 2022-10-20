@@ -1,34 +1,34 @@
 package com.willor.lib_data.domain
 
+import com.willor.lib_data.data.local.prefs.UserPreferences
 import com.willor.lib_data.domain.dataobjs.NetworkState
-import com.willor.lib_data.domain.dataobjs.responses.chart_resp.StockChartResp
-import com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp.EtfQuoteResp
-import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.MajorFuturesResp
-import com.willor.lib_data.domain.dataobjs.responses.major_indices_resp.MajorIndicesResp
-import com.willor.lib_data.domain.dataobjs.responses.options_overview_resp.OptionsOverviewResp
-import com.willor.lib_data.domain.dataobjs.responses.popular_wl_options_resp.PopularWatchlistOptionsResp
-import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.PopularWatchlistResp
-import com.willor.lib_data.domain.dataobjs.responses.popular_wl_search_resp.PopularWatchlistSearchResp
+import com.willor.lib_data.domain.dataobjs.responses.chart_resp.StockChart
+import com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp.EtfQuote
+import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.MajorFutures
+import com.willor.lib_data.domain.dataobjs.responses.major_indices_resp.MajorIndices
+import com.willor.lib_data.domain.dataobjs.responses.options_overview_resp.OptionsOverview
+import com.willor.lib_data.domain.dataobjs.responses.popular_wl_options_resp.PopularWatchlistOptions
+import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.PopularWatchlist
+import com.willor.lib_data.domain.dataobjs.responses.popular_wl_search_resp.PopularWatchlistSearch
 import com.willor.lib_data.domain.dataobjs.responses.stock_competitors_resp.StockCompetitors
-import com.willor.lib_data.domain.dataobjs.responses.stock_quote_resp.StockQuoteResp
-import com.willor.lib_data.domain.dataobjs.responses.stock_snr_levels_resp.StockSnrLevelsResp
-import com.willor.lib_data.domain.dataobjs.responses.uoa_page_resp.UoaPageResp
+import com.willor.lib_data.domain.dataobjs.responses.stock_quote_resp.StockQuote
+import com.willor.lib_data.domain.dataobjs.responses.stock_snr_levels_resp.StockSnrLevels
+import com.willor.lib_data.domain.dataobjs.responses.uoa_page_resp.UoaPage
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 
 interface Repo {
 
     suspend
     fun getStockChart(ticker: String, interval: String, periodRange: String, prepost: Boolean)
-    : Flow<NetworkState<StockChartResp?>>
+    : Flow<NetworkState<StockChart?>>
 
     suspend
     fun getMajorFutures()
-    : Flow<NetworkState<MajorFuturesResp?>>
+    : Flow<NetworkState<MajorFutures?>>
 
     suspend
     fun getMajorIndices()
-    : Flow<NetworkState<MajorIndicesResp?>>
+    : Flow<NetworkState<MajorIndices?>>
 
     suspend
     fun getStockCompetitors(ticker: String)
@@ -36,33 +36,39 @@ interface Repo {
 
     suspend
     fun getStockSnrLevels(ticker: String)
-    : Flow<NetworkState<StockSnrLevelsResp?>>
+    : Flow<NetworkState<StockSnrLevels?>>
 
     suspend
     fun getOptionsOverview(ticker: String)
-    : Flow<NetworkState<OptionsOverviewResp?>>
+    : Flow<NetworkState<OptionsOverview?>>
 
     suspend
     fun getUnusualOptionsActivity(page: Int = 0)
-    : Flow<NetworkState<UoaPageResp?>>
+    : Flow<NetworkState<UoaPage?>>
 
     suspend
     fun getStockQuote(ticker: String)
-    : Flow<Response<StockQuoteResp?>>
+    : Flow<NetworkState<StockQuote?>>
 
     suspend
     fun getEtfQuote(ticker: String)
-    : Flow<Response<EtfQuoteResp?>>
+    : Flow<NetworkState<EtfQuote?>>
 
     suspend
     fun getAllAvailablePopularWatchlistOptions()
-    : Flow<Response<PopularWatchlistOptionsResp?>>
+    : Flow<NetworkState<PopularWatchlistOptions?>>
 
     suspend
     fun getPopularWatchlist(wlName: String)
-    : Flow<Response<PopularWatchlistResp?>>
+    : Flow<NetworkState<PopularWatchlist?>>
 
     suspend
     fun getPopularWatchlistBySearchTags(searchTags: String)
-    : Flow<Response<PopularWatchlistSearchResp?>>
+    : Flow<NetworkState<PopularWatchlistSearch?>>
+
+    suspend
+    fun getUserPreferences(): Flow<UserPreferences>
+
+    suspend
+    fun saveUserPreferences(userPrefs: UserPreferences)
 }
