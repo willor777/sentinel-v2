@@ -3,16 +3,20 @@ package com.willor.sentinel_v2.presentation.home
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.willor.lib_data.domain.dataobjs.NetworkState
 import com.willor.sentinel_v2.presentation.home.home_components.HomeBottomAppBar
+import com.willor.sentinel_v2.presentation.home.home_components.HomeFuturesDisplayLazyRow
 import com.willor.sentinel_v2.presentation.home.home_components.HomeTopAppBar
 
 
-const val tagLoc = "Homescreen"
+const val HOME_TAG = "Homescreen"
 
 
 // TODO
@@ -43,14 +47,16 @@ fun handleUiEvent(event: UiEvent){
 fun HomeRoute(
     navigator: DestinationsNavigator,
     viewModel: HomeViewModel = hiltViewModel()
-){
+) {
 
-    Log.i(tagLoc, "HomeRoute called. Calling HomeUiEvent.InitialLoad")
+    Log.i(HOME_TAG, "HomeRoute called. Calling HomeUiEvent.InitialLoad")
     viewModel.handleEvent(HomeUiEvent.InitialLoad)
+
+    val homeUiState = viewModel.uiState.collectAsState()
 
 
     HomeContent(
-
+        homeUiState
     )
 
 
@@ -60,8 +66,10 @@ fun HomeRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
+    homeUiState: State<HomeUiState>
+) {
 
-){
+    Log.i(HOME_TAG, "HomeContent Composed")
 
     val scaffoldState = rememberScaffoldState(
         rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -89,17 +97,46 @@ fun HomeContent(
         }
     ) {
 
-        Text("Welcome to the home screen")
+        FuturesDisplay(
+            homeUiState = homeUiState,
+            onFutureCardClicked = {
+                // TODO
+            }
+        )
 
     }
 
 }
 
 
-sealed class HomeUiEvent(){
-    object InitialLoad: HomeUiEvent()
-    object LoadFutures: HomeUiEvent()
-    object LoadCurrentWatchlist: HomeUiEvent()
-    class AddTickerToSentinelWatchlist(val ticker: String): HomeUiEvent()
-    class RemoveTickerFromSentinelWatchlist(val ticker: String): HomeUiEvent()
+@Composable
+fun FuturesDisplay(
+    homeUiState: State<HomeUiState>,
+    onFutureCardClicked: (ticker: String) -> Unit,
+) {
+    when (val futuresData = homeUiState.value.majorFutures) {
+        is NetworkState.Success -> {
+            HomeFuturesDisplayLazyRow(
+                majorFutures = futuresData.data!!,
+                onItemClicked = {
+                    onFutureCardClicked(it)
+                }
+            )
+        }
+        is NetworkState.Loading -> {
+            Text("Futures Data Loading")
+        }
+        is NetworkState.Error -> {
+            Text("Futures Data Failed to load. Error....")
+        }
+    }
+}
+
+
+sealed class HomeUiEvent() {
+    object InitialLoad : HomeUiEvent()
+    object LoadFutures : HomeUiEvent()
+    object LoadCurrentWatchlist : HomeUiEvent()
+    class AddTickerToSentinelWatchlist(val ticker: String) : HomeUiEvent()
+    class RemoveTickerFromSentinelWatchlist(val ticker: String) : HomeUiEvent()
 }

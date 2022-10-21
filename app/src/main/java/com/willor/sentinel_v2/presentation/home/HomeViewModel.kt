@@ -25,12 +25,8 @@ class HomeViewModel @Inject constructor(
     private val useCases: UseCases
 ): ViewModel() {
 
-    val _uiState = MutableStateFlow(HomeUiState())
+    private val _uiState = MutableStateFlow(HomeUiState())
     val uiState get() = _uiState
-
-    init {
-
-    }
 
     private fun loadDefaultWatchlist() {
         viewModelScope.launch(Dispatchers.IO) {
