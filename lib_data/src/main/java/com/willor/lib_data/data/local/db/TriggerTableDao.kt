@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.willor.lib_data.domain.dataobjs.entities.TriggerEntity
+import kotlinx.coroutines.flow.Flow
 
 
 @Suppress("unused")
@@ -25,53 +26,53 @@ interface TriggerTableDao {
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE ticker = :ticker")
-    suspend fun getAllTriggersForTicker(ticker: String): List<TriggerEntity?>
+    fun getAllTriggersForTicker(ticker: String): Flow<List<TriggerEntity?>>
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE triggerValue > 0")
-    suspend fun getAllLongTriggers(): List<TriggerEntity?>
+    fun getAllLongTriggers(): Flow<List<TriggerEntity?>>
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE triggerValue < 0")
-    suspend fun getAllShortTriggers(): List<TriggerEntity?>
+    fun getAllShortTriggers(): Flow<List<TriggerEntity?>>
 
 
     @Query(
         "SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE timestamp BETWEEN :startTime AND :endTime"
     )
-    suspend fun getAllTriggersInTimeframe(startTime: Long, endTime: Long): List<TriggerEntity?>
+    fun getAllTriggersInTimeframe(startTime: Long, endTime: Long): Flow<List<TriggerEntity?>>
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE triggerValue > 0 AND ticker = :ticker")
-    suspend fun getAllLongTriggersForTicker(ticker: String): List<TriggerEntity?>
+    fun getAllLongTriggersForTicker(ticker: String): Flow<List<TriggerEntity?>>
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE triggerValue < 0 AND ticker = :ticker")
-    suspend fun getAllShortTriggersForTicker(ticker: String): List<TriggerEntity?>
+    fun getAllShortTriggersForTicker(ticker: String): Flow<List<TriggerEntity?>>
 
 
     @Query(
         "SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE ticker = :ticker " +
                 "AND timestamp < :endTime AND timestamp > :startTime"
     )
-    suspend fun getAllTriggersForTickerInTimeframe(ticker: String, startTime: Long, endTime: Long)
-    : List<TriggerEntity?>
+    fun getAllTriggersForTickerInTimeframe(ticker: String, startTime: Long, endTime: Long)
+    : Flow<List<TriggerEntity?>>
 
 
     @Query(
         "SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE ticker = :ticker AND triggerValue > 0 " +
                 "AND timestamp BETWEEN :endTime AND  :startTime"
     )
-    suspend fun getAllLongTriggersForTickerInTimeframe(ticker: String, startTime: Long, endTime: Long)
-    : List<TriggerEntity?>
+    fun getAllLongTriggersForTickerInTimeframe(ticker: String, startTime: Long, endTime: Long)
+    : Flow<List<TriggerEntity?>>
 
 
     @Query(
         "SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE ticker = :ticker AND triggerValue < 0 " +
                 "AND timestamp BETWEEN :endTime AND  :startTime"
     )
-    suspend fun getAllShortTriggersForTickerInTimeframe(ticker: String, startTime: Long, endTime: Long)
-    : List<TriggerEntity?>
+    fun getAllShortTriggersForTickerInTimeframe(ticker: String, startTime: Long, endTime: Long)
+    : Flow<List<TriggerEntity?>>
 
 }
 

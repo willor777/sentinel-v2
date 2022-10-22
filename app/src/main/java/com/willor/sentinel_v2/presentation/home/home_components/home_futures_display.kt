@@ -1,41 +1,67 @@
 package com.willor.sentinel_v2.presentation.home.home_components
 
-import android.util.Log
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.Future
+import com.willor.compose_loading_anim.LoadingAnimation
+import com.willor.compose_loading_anim.loadLottieFile
+import com.willor.lib_data.domain.dataobjs.NetworkState
 import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.MajorFutures
-import com.willor.sentinel_v2.presentation.home.HOME_TAG
+import com.willor.sentinel_v2.MainActivity
+import com.willor.sentinel_v2.presentation.common.StateOfDisplay
+import com.willor.sentinel_v2.presentation.common.TickerCardLazyRow
 import com.willor.sentinel_v2.ui.theme.MySizes
-import com.willor.sentinel_v2.utils.determineGainLossColor
-import com.willor.sentinel_v2.utils.formatChangeDollarAndChangePct
+
 
 
 @Composable
-fun HomeFuturesDisplayLazyRow(
-    majorFutures: MajorFutures,
-    onItemClicked: (ticker: String) -> Unit
+fun FuturesDisplay(
+    futuresNetworkState: NetworkState<MajorFutures?>,
+    onCardClicked: (ticker: String) -> Unit,
+) {
 
+    var currentState by remember {
+        mutableStateOf(StateOfDisplay.Loading)
+    }
 
-){
-    Log.i(HOME_TAG, "HomeFuturesDisplayLazyRow Composed.")
+    currentState = when (futuresNetworkState){
+        is NetworkState.Success -> {
+            StateOfDisplay.Success
+        }
+        is NetworkState.Loading -> {
+            StateOfDisplay.Loading
+        }
+        is NetworkState.Error -> {
+            StateOfDisplay.Error
+        }
+    }
+
+    FuturesCrossfadeAnimationController(currentState, futuresNetworkState, onCardClicked)
+}
+
+@Composable
+private fun FuturesCrossfadeAnimationController(
+    currentState: StateOfDisplay,
+    futuresNetworkState: NetworkState<MajorFutures?>,
+    onCardClicked: (ticker: String) -> Unit
+) {
 
     Column(
-        modifier = Modifier
-            .padding(0.dp, MySizes.VERTICAL_CONTENT_PADDING_SMALL)
-            .fillMaxWidth()
-            .fillMaxHeight(.15f),
+        modifier = Modifier.height(90.dp).fillMaxWidth()
+            .padding(
+                top = MySizes.VERTICAL_EDGE_PADDING,
+//                bottom = MySizes.VERTICAL_CONTENT_PADDING_MEDIUM,
+            ),
+        verticalArrangement = Arrangement.SpaceAround
     ){
+
+        // Header Text "Futures"
         Text(
             text = "Futures",
             fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
@@ -44,96 +70,110 @@ fun HomeFuturesDisplayLazyRow(
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        LazyRow(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(MySizes.HORIZONTAL_CONTENT_PADDING_MEDIUM, 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ){
-            items(majorFutures.data.lastIndex){ itemIndex ->
-                FutureItemDisplayCard(
-                    future = majorFutures.data[itemIndex],
-                    onCardClicked = {
-                        onItemClicked(it)
-                    }
+        Spacer(
+            Modifier.height(
+                MySizes.VERTICAL_CONTENT_PADDING_SMALL
+            )
+        )
+
+        Spacer(
+            Modifier.height(1.dp).fillMaxWidth()
+                .background(
+                    MaterialTheme.colorScheme.primary
                 )
+        )
+
+        Spacer(
+            Modifier.height(
+                MySizes.VERTICAL_CONTENT_PADDING_SMALL
+            )
+        )
+
+        // Content
+        Crossfade(targetState = currentState) {
+
+            when (currentState) {
+
+                // Successful Load
+                StateOfDisplay.Success -> {
+                    FuturesDisplaySuccess(
+                        majorFutures = (futuresNetworkState as NetworkState.Success).data!!,
+                        onItemClicked = { ticker ->
+                            onCardClicked(ticker)
+                        }
+                    )
+                }
+
+                // Load In Progress
+                StateOfDisplay.Loading -> {
+                    FuturesDisplayLoading()
+                }
+
+                // Load Failed
+                StateOfDisplay.Error -> {
+                    FuturesDisplayError()
+                }
             }
         }
 
     }
-
-
-
-
-
 }
-
 
 
 @Composable
-fun FutureItemDisplayCard(
-    future: Future,
-    onCardClicked: (ticker: String) -> Unit
+fun FuturesDisplaySuccess(
+    majorFutures: MajorFutures,
+    onItemClicked: (ticker: String) -> Unit
 ){
-    
-    val glColor = determineGainLossColor(future.changeDollar)
-    
-    Card(
-        modifier = Modifier.wrapContentSize()
-            .clickable {
-                onCardClicked(future.ticker)
-            },
-        shape = RoundedCornerShape(MySizes.CARD_ROUNDED_CORNER),
-        elevation = MySizes.CARD_ELEVATION,
-//        contentColor = MaterialTheme.colorScheme.onSecondary,
-//        backgroundColor = MaterialTheme.colorScheme.secondary
-    ){
-        Column(
-            modifier = Modifier.fillMaxHeight().fillMaxWidth(.45f)
-                .background(MaterialTheme.colorScheme.secondary),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ){
 
-            // Future Name
-            Text(
-                text = future.name,
-                fontSize = MaterialTheme.typography.titleSmall.fontSize,
-                fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
-                fontFamily = MaterialTheme.typography.titleSmall.fontFamily,
-                color = MaterialTheme.colorScheme.onSecondary,
-                modifier = Modifier.padding(
-                    MySizes.HORIZONTAL_CONTENT_PADDING_SMALL,
-                    MySizes.VERTICAL_CONTENT_PADDING_SMALL
-                )
-            )
-
-            // Future Change
-            Text(
-                text = formatChangeDollarAndChangePct(
-                    future.changeDollar,
-                    future.changePercent
-                ),
-                fontSize = MaterialTheme.typography.bodySmall.fontSize,
-                fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
-                fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                color = glColor,
-                modifier = Modifier.padding(
-                    MySizes.HORIZONTAL_CONTENT_PADDING_SMALL,
-                    MySizes.VERTICAL_CONTENT_PADDING_SMALL
-                )
-            )
-        }
-
+    // Build data for the TickerCardLazyrow Composable
+    val tickerList = mutableListOf<String>()
+    val gainDollarList = mutableListOf<Double>()
+    val gainPctList = mutableListOf<Double>()
+    majorFutures.data.forEach {
+        tickerList.add(it.name)
+        gainDollarList.add(it.changeDollar)
+        gainPctList.add(it.changePercent)
     }
+
+        TickerCardLazyRow(
+            tickerList = tickerList,
+            gainDollarList = gainDollarList,
+            gainPctList = gainPctList,
+            onItemClicked = { ticker -> onItemClicked(ticker) }
+        )
 }
 
 
+@Composable
+fun FuturesDisplayLoading(){
+    val con = LocalContext.current
+
+        LoadingAnimation(
+            modifier = Modifier.fillMaxSize(),
+            lottieJson = loadLottieFile(con.resources, MainActivity.lottieLoadingJsonId),
+            condition = {
+                false       // Keep looping until the calling composable changes it.
+            },
+            onMaxTime = {},
+            onConditionTrue = {},
+        )
+}
 
 
+@Composable
+fun FuturesDisplayError(){
 
+    val con = LocalContext.current
 
-
-
-
-
-
+        LoadingAnimation(
+            modifier = Modifier.fillMaxSize(),
+            loadLottieFile(con.resources, MainActivity.lottieErrorJsonId),
+            condition = {
+                false           // Keep looping until the calling composable changes it.
+            },
+            onMaxTime = {},
+            onConditionTrue = {},
+        )
+}
 

@@ -33,5 +33,11 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
+    companion object{
+        val lottieLoadingJsonId = R.raw.loading_circle_anim
+        val lottieErrorJsonId = R.raw.error_page_anim
+    }
 }
 
