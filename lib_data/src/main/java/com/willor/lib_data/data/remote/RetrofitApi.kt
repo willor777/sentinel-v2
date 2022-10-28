@@ -13,8 +13,8 @@ object RetrofitApi {
         .client(
             OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
-                .readTimeout(5000, TimeUnit.MILLISECONDS)
-                .connectTimeout(5000, TimeUnit.MILLISECONDS)
+                .readTimeout(10000, TimeUnit.MILLISECONDS)
+                .connectTimeout(10000, TimeUnit.MILLISECONDS)
                 .callTimeout(20000, TimeUnit.MILLISECONDS)
                 .followRedirects(true)
                 .build()

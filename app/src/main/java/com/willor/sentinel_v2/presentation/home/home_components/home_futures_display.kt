@@ -16,21 +16,23 @@ import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.MajorFut
 import com.willor.sentinel_v2.MainActivity
 import com.willor.sentinel_v2.presentation.common.StateOfDisplay
 import com.willor.sentinel_v2.presentation.common.TickerCardLazyRow
+import com.willor.sentinel_v2.presentation.home.HomeUiState
 import com.willor.sentinel_v2.ui.theme.MySizes
-
 
 
 @Composable
 fun FuturesDisplay(
-    futuresNetworkState: NetworkState<MajorFutures?>,
+    homeUiStateProvider: () -> HomeUiState,
     onCardClicked: (ticker: String) -> Unit,
 ) {
+
+    val futuresNetworkState = homeUiStateProvider().majorFutures
 
     var currentState by remember {
         mutableStateOf(StateOfDisplay.Loading)
     }
 
-    currentState = when (futuresNetworkState){
+    currentState = when (futuresNetworkState) {
         is NetworkState.Success -> {
             StateOfDisplay.Success
         }
@@ -53,13 +55,11 @@ private fun FuturesCrossfadeAnimationController(
 ) {
 
     Column(
-        modifier = Modifier.height(90.dp).fillMaxWidth()
-            .padding(
-                top = MySizes.VERTICAL_EDGE_PADDING,
-//                bottom = MySizes.VERTICAL_CONTENT_PADDING_MEDIUM,
-            ),
+        modifier = Modifier
+            .height(95.dp)
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceAround
-    ){
+    ) {
 
         // Header Text "Futures"
         Text(
@@ -77,7 +77,9 @@ private fun FuturesCrossfadeAnimationController(
         )
 
         Spacer(
-            Modifier.height(1.dp).fillMaxWidth()
+            Modifier
+                .height(1.dp)
+                .fillMaxWidth()
                 .background(
                     MaterialTheme.colorScheme.primary
                 )
@@ -115,7 +117,6 @@ private fun FuturesCrossfadeAnimationController(
                 }
             }
         }
-
     }
 }
 
@@ -124,7 +125,7 @@ private fun FuturesCrossfadeAnimationController(
 fun FuturesDisplaySuccess(
     majorFutures: MajorFutures,
     onItemClicked: (ticker: String) -> Unit
-){
+) {
 
     // Build data for the TickerCardLazyrow Composable
     val tickerList = mutableListOf<String>()
@@ -136,44 +137,44 @@ fun FuturesDisplaySuccess(
         gainPctList.add(it.changePercent)
     }
 
-        TickerCardLazyRow(
-            tickerList = tickerList,
-            gainDollarList = gainDollarList,
-            gainPctList = gainPctList,
-            onItemClicked = { ticker -> onItemClicked(ticker) }
-        )
+    TickerCardLazyRow(
+        tickerList = tickerList,
+        gainDollarList = gainDollarList,
+        gainPctList = gainPctList,
+        onItemClicked = { ticker -> onItemClicked(ticker) }
+    )
 }
 
 
 @Composable
-fun FuturesDisplayLoading(){
+fun FuturesDisplayLoading() {
     val con = LocalContext.current
 
-        LoadingAnimation(
-            modifier = Modifier.fillMaxSize(),
-            lottieJson = loadLottieFile(con.resources, MainActivity.lottieLoadingJsonId),
-            condition = {
-                false       // Keep looping until the calling composable changes it.
-            },
-            onMaxTime = {},
-            onConditionTrue = {},
-        )
+    LoadingAnimation(
+        modifier = Modifier.fillMaxSize(),
+        lottieJson = loadLottieFile(con.resources, MainActivity.lottieLoadingJsonId),
+        condition = {
+            false       // Keep looping until the calling composable changes it.
+        },
+        onMaxTime = {},
+        onConditionTrue = {},
+    )
 }
 
 
 @Composable
-fun FuturesDisplayError(){
+fun FuturesDisplayError() {
 
     val con = LocalContext.current
 
-        LoadingAnimation(
-            modifier = Modifier.fillMaxSize(),
-            loadLottieFile(con.resources, MainActivity.lottieErrorJsonId),
-            condition = {
-                false           // Keep looping until the calling composable changes it.
-            },
-            onMaxTime = {},
-            onConditionTrue = {},
-        )
+    LoadingAnimation(
+        modifier = Modifier.fillMaxSize(),
+        loadLottieFile(con.resources, MainActivity.lottieErrorJsonId),
+        condition = {
+            false           // Keep looping until the calling composable changes it.
+        },
+        onMaxTime = {},
+        onConditionTrue = {},
+    )
 }
 

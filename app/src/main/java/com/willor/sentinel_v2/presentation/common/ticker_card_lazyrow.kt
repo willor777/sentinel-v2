@@ -60,7 +60,6 @@ private fun TickerCardItem(
             },
         shape = RoundedCornerShape(MySizes.CARD_ROUNDED_CORNER),
         elevation = MySizes.CARD_ELEVATION,
-        contentColor = MaterialTheme.colorScheme.onSecondary,
         backgroundColor = MaterialTheme.colorScheme.secondary
     ){
         Column(

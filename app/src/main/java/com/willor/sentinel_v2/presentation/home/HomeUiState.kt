@@ -6,7 +6,10 @@ import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.MajorFut
 import com.willor.lib_data.domain.dataobjs.responses.major_indices_resp.MajorIndices
 import com.willor.lib_data.domain.dataobjs.responses.popular_wl_options_resp.PopularWatchlistOptions
 import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.PopularWatchlist
+import javax.annotation.concurrent.Immutable
 
+
+@Immutable
 data class HomeUiState(
     val majorFutures: NetworkState<MajorFutures?> = NetworkState.Loading(),
     val majorIndices: NetworkState<MajorIndices?> = NetworkState.Loading(),

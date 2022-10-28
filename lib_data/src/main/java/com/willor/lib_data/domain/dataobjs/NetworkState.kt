@@ -5,3 +5,4 @@ sealed class NetworkState<T>{
     class Success<T>(val data: T): NetworkState<T>()
     class Error<T>(val msg: String, val exception: Exception? = null): NetworkState<T>()
 }
+

@@ -15,7 +15,12 @@ object DiUseCases {
     fun provideGetMajorFuturesUsecase(repo: Repo): GetMajorFuturesUsecase{
         return GetMajorFuturesUsecase(repo)
     }
-    
+
+    @Provides
+    fun provideGetMajorIndicesUsecase(repo: Repo): GetMajorIndicesUsecase {
+        return GetMajorIndicesUsecase(repo)
+    }
+
     @Provides
     fun provideGetPopularWatchlistOptionsUsecase(repo: Repo): GetPopularWatchlistOptionsUsecase{
         return GetPopularWatchlistOptionsUsecase(repo)
@@ -39,13 +44,14 @@ object DiUseCases {
     @Provides
     fun provideUsecases(
         majorFutures: GetMajorFuturesUsecase,
+        majorIndices: GetMajorIndicesUsecase,
         popWlOptions: GetPopularWatchlistOptionsUsecase,
         popWl: GetPopularWatchlistUsecase,
         userPrefs: GetUserPreferencesUsecase,
         saveUserPrefs: SaveUserPreferencesUsecase
     ): UseCases{
         return UseCases(
-            userPrefs, saveUserPrefs, majorFutures, popWlOptions, popWl
+            userPrefs, saveUserPrefs, majorFutures, majorIndices, popWlOptions, popWl
         )
     }
 }

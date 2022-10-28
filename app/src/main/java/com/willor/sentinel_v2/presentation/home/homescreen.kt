@@ -2,7 +2,6 @@ package com.willor.sentinel_v2.presentation.home
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,44 +12,61 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.willor.sentinel_v2.presentation.home.home_components.*
 import com.willor.sentinel_v2.ui.theme.MySizes
+import com.willor.sentinel_v2.ui.theme.SentinelTheme
 
 
-const val HOME_TAG = "Homescreen"
+const val TAG_HOME = "HOME_SCREEN"
 
 
 
 
-
-@Destination(start = true)
+@RootNavGraph(start = true)
+@Destination
 @Composable
 fun HomeRoute(
     navigator: DestinationsNavigator,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
-    Log.i(HOME_TAG, "HomeRoute called. Calling HomeUiEvent.InitialLoad")
+    Log.i(TAG_HOME, "HomeRoute called. Calling HomeUiEvent.InitialLoad")
     viewModel.handleEvent(HomeUiEvent.InitialLoad)
 
     val homeUiState = viewModel.uiState.collectAsState()
 
-    HomeContent(
-        homeUiState,
-    )
 
+    SentinelTheme {
 
+        HomeContent(
+            homeUiStateProvider = { homeUiState.value },
+            onHomeIconClicked = {},
+            onSettingsIconClicked = {},
+            onFuturesCardClicked = {},
+            onIndexCardClicked = {},
+            onWatchlistOptionClicked = {
+                viewModel.handleEvent(HomeUiEvent.WatchlistOptionClicked(it))
+                Log.i(TAG_HOME, "Watchlist Card Clicked: $it")
+            },
+        )
+    }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
-    homeUiState: State<HomeUiState>,
+    homeUiStateProvider: () -> HomeUiState,
+    onHomeIconClicked: () -> Unit,
+    onSettingsIconClicked: () -> Unit,
+    onFuturesCardClicked: (String) -> Unit,
+    onIndexCardClicked: (String) -> Unit,
+    onWatchlistOptionClicked: (String) -> Unit,
 ) {
 
-    Log.i(HOME_TAG, "HomeContent Composed")
+    Log.i(TAG_HOME, "HomeContent Composed")
 
     val scaffoldState = rememberScaffoldState(
         rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -63,8 +79,8 @@ fun HomeContent(
         scaffoldState = scaffoldState,
         topBar = {
             HomeTopAppBar(
-                onHomeIconClicked = { /*TODO*/ },
-                onSettingsIconClicked = { /*TODO*/ },
+                onHomeIconClicked = { onHomeIconClicked() },
+                onSettingsIconClicked = { onSettingsIconClicked() },
             )
         },
         bottomBar = {
@@ -81,26 +97,39 @@ fun HomeContent(
     ) {
 
         Column(
-            modifier = Modifier.fillMaxWidth().height(1000.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1000.dp)
                 .verticalScroll(contentScrollState)
+                .padding(
+                    MySizes.HORIZONTAL_EDGE_PADDING,
+                    MySizes.VERTICAL_EDGE_PADDING
+                )
         ) {
 
             FuturesDisplay(
-                futuresNetworkState = homeUiState.value.majorFutures,
-                onCardClicked = { /*TODO*/ }
+                homeUiStateProvider = homeUiStateProvider,
+                onCardClicked = { onFuturesCardClicked(it) }
             )
 
-            Spacer(Modifier.height(MySizes.VERTICAL_CONTENT_PADDING_SMALL))
 
-//            IndicesDisplay(
-//                homeUiState = homeUiState,
-//                onCardClicked = { /*TODO*/ }
-//            )
-
+            IndicesDisplay(
+                homeUiStateProvider = homeUiStateProvider,
+                onCardClicked = { onIndexCardClicked(it) }
+            )
 
 
+            HomePopularWatchlistDisplay(
+                homeUiStateProvider = homeUiStateProvider,
+                onOptionClick = { onWatchlistOptionClicked(it) },
+                onTickerSearchIconClick = { /*TODO Navigate to quote screen*/ }
+            )
+
+            // TODO Scratch Delete This Column
             Column(
-                modifier = Modifier.fillMaxSize().height(1000.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .height(1000.dp)
                     .background(Color.Blue),
                 verticalArrangement = Arrangement.SpaceBetween
             ){
@@ -122,7 +151,20 @@ fun HomeContent(
 sealed class HomeUiEvent() {
     object InitialLoad : HomeUiEvent()
     object RefreshData: HomeUiEvent()
-    object LoadCurrentWatchlist : HomeUiEvent()
+    class WatchlistOptionClicked(val name: String): HomeUiEvent()
     class AddTickerToSentinelWatchlist(val ticker: String) : HomeUiEvent()
     class RemoveTickerFromSentinelWatchlist(val ticker: String) : HomeUiEvent()
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -14,11 +14,13 @@ val LightOnSecondary = Color(0xFF000000)
 val LightTeritary = Color(0xFFE9E9E9)
 val LightBackground = Color(0xFFF6F8FF)
 val LightOnBackground = Color(0xFF000000)
+val LightSelectedOption = Color(0xFF7790F6)
 
 // Dark
-val DarkSecondary = Color(0xFF757F86)
+val DarkSecondary = Color(0xFF262626)
 val DarkOnSecondary = Color(0xFFFFFFFF)
 val DarkTeritary = Color(0xFF434448)
-val DarkBackground = Color(0xFF252423)
+val DarkBackground = Color(0xFF464646)
 val DarkOnBackground = Color(0xFFFFFFFF)
+val DarkSelectedOption = Color(0xFF7790F6)
 
