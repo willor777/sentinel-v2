@@ -28,32 +28,12 @@ fun IndicesDisplay(
 
     val majorIndices = homeUiStateProvider().majorIndices
 
-    var loadState by remember {
-        mutableStateOf(StateOfDisplay.Loading)
-    }
-
-    loadState = when (majorIndices) {
-
-        is NetworkState.Loading -> {
-            StateOfDisplay.Loading
-        }
-
-        is NetworkState.Success -> {
-            StateOfDisplay.Success
-        }
-
-        is NetworkState.Error -> {
-            StateOfDisplay.Error
-        }
-    }
-
-    IndicesDisplayCrossfadeController(loadState, majorIndices, onCardClicked)
+    IndicesDisplayCrossfadeController(majorIndices, onCardClicked)
 
 }
 
 @Composable
 private fun IndicesDisplayCrossfadeController(
-    loadState: StateOfDisplay,
     majorIndices: NetworkState<MajorIndices?>,
     onCardClicked: (ticker: String) -> Unit
 ) {
@@ -96,20 +76,23 @@ private fun IndicesDisplayCrossfadeController(
             )
         )
 
-        Crossfade(targetState = loadState) { indicesLoadState ->
-            when (indicesLoadState) {
-                StateOfDisplay.Loading -> {
+        Crossfade(targetState = majorIndices) {
+            when (it) {
+
+                is NetworkState.Loading -> {
                     IndicesDisplayLoading()
                 }
-                StateOfDisplay.Success -> {
+
+                is NetworkState.Success -> {
                     IndicesDisplaySuccess(
-                        majorIndices = (majorIndices as NetworkState.Success).data!!,
+                        majorIndices = it.data!!,
                         onCardClicked = {
                             onCardClicked(it)
                         }
                     )
                 }
-                StateOfDisplay.Error -> {
+
+                is NetworkState.Error -> {
                     IndicesDisplayError()
                 }
             }

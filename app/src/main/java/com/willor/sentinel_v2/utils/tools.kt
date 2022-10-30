@@ -44,3 +44,8 @@ fun determineGainLossColor(d: Double): Color {
         LossRed
     }
 }
+
+
+fun calculateRatio(curValue: Double, avgValue: Double): Double{
+    return curValue / avgValue
+}

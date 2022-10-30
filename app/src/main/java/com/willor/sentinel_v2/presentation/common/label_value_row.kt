@@ -21,10 +21,6 @@ fun LabelValueRow(
     valueColor: Color? = null
 ){
 
-    Log.d("THEME_TEST", "Dark Mode: ${isSystemInDarkTheme()}")
-    Log.d("THEME_TEST", "Secondary Color: ${MaterialTheme.colorScheme.secondary}")
-    Log.d("THEME_TEST", "OnSecondary Color: ${MaterialTheme.colorScheme.onSecondary}")
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,24 +80,3 @@ private fun ValueText(
         color = color ?: MaterialTheme.colorScheme.onSecondary
     )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

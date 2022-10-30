@@ -40,7 +40,6 @@ fun DropdownOptionSelector(
         mutableStateOf(false)
     }
 
-    Log.d("TESTING", "OPTIONS LIST: $optionsList")
 
     Column(
         modifier = Modifier
@@ -166,15 +165,3 @@ private fun reOrderList(curSelection: String, listOfOptions: List<String>): List
     }
     return newList
 }
-
-
-
-
-
-
-
-
-
-
-
-

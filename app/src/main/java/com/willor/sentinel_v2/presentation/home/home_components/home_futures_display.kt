@@ -28,28 +28,11 @@ fun FuturesDisplay(
 
     val futuresNetworkState = homeUiStateProvider().majorFutures
 
-    var currentState by remember {
-        mutableStateOf(StateOfDisplay.Loading)
-    }
-
-    currentState = when (futuresNetworkState) {
-        is NetworkState.Success -> {
-            StateOfDisplay.Success
-        }
-        is NetworkState.Loading -> {
-            StateOfDisplay.Loading
-        }
-        is NetworkState.Error -> {
-            StateOfDisplay.Error
-        }
-    }
-
-    FuturesCrossfadeAnimationController(currentState, futuresNetworkState, onCardClicked)
+    FuturesCrossfadeAnimationController(futuresNetworkState, onCardClicked)
 }
 
 @Composable
 private fun FuturesCrossfadeAnimationController(
-    currentState: StateOfDisplay,
     futuresNetworkState: NetworkState<MajorFutures?>,
     onCardClicked: (ticker: String) -> Unit
 ) {
@@ -92,14 +75,14 @@ private fun FuturesCrossfadeAnimationController(
         )
 
         // Content
-        Crossfade(targetState = currentState) {
+        Crossfade(targetState = futuresNetworkState) {
 
-            when (currentState) {
+            when (it){
 
                 // Successful Load
-                StateOfDisplay.Success -> {
+                is NetworkState.Success -> {
                     FuturesDisplaySuccess(
-                        majorFutures = (futuresNetworkState as NetworkState.Success).data!!,
+                        majorFutures = it.data!!,
                         onItemClicked = { ticker ->
                             onCardClicked(ticker)
                         }
@@ -107,12 +90,12 @@ private fun FuturesCrossfadeAnimationController(
                 }
 
                 // Load In Progress
-                StateOfDisplay.Loading -> {
+                is NetworkState.Loading -> {
                     FuturesDisplayLoading()
                 }
 
                 // Load Failed
-                StateOfDisplay.Error -> {
+                is NetworkState.Error -> {
                     FuturesDisplayError()
                 }
             }
@@ -177,4 +160,3 @@ fun FuturesDisplayError() {
         onConditionTrue = {},
     )
 }
-

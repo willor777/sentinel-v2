@@ -108,7 +108,7 @@ class HomeViewModel @Inject constructor(
      */
     fun loadMajorIndicesData() {
 
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             useCases.getMajorIndicesUsecase().collectLatest {
                 _uiState.value = _uiState.value.copy(
                     majorIndices = it
@@ -150,15 +150,22 @@ class HomeViewModel @Inject constructor(
                 )
                 Log.i(TAG, "PopularWatchlist Loaded: ${it.toString()}")
 
-                when(it){
+                when (it) {
                     is NetworkState.Success -> {
                         Log.i(TAG, "PopularWatchlist Success! Data: ${it.data}")
+                    }
+                    is NetworkState.Loading -> {
+                        Log.i(TAG, "PopularWatchlist Loading!")
+                    }
+                    is NetworkState.Error -> {
+                        Log.i(TAG, "PopularWatchlist Error! Msg: ${it.msg} Exception: ${it.exception}")
                     }
                 }
             }
 
         }
     }
+
 
     private fun setUserPrefDefaultWatchlist(wlName: String) {
         // Set wlName as default in prefs
@@ -192,6 +199,17 @@ class HomeViewModel @Inject constructor(
 
                 // Load Default Wl
                 loadDefaultWatchlist()
+            }
+
+            is HomeUiEvent.RefreshData -> {
+                loadMajorFuturesData()
+                loadMajorIndicesData()
+
+                // This shouldn't happen. Using safe way just in case
+                val curWatchlist = _uiState.value.userPrefs?.lastPopularWatchlistSelected
+                if (curWatchlist != null){
+                    loadWatchlist(curWatchlist)
+                }
             }
 
             is HomeUiEvent.WatchlistOptionClicked -> {

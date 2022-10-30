@@ -17,6 +17,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.willor.sentinel_v2.presentation.home.home_components.*
 import com.willor.sentinel_v2.ui.theme.MySizes
 import com.willor.sentinel_v2.ui.theme.SentinelTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 
 const val TAG_HOME = "HOME_SCREEN"
@@ -36,6 +38,13 @@ fun HomeRoute(
     viewModel.handleEvent(HomeUiEvent.InitialLoad)
 
     val homeUiState = viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit){
+        while(this.isActive){
+            delay(5000)
+            viewModel.handleEvent(HomeUiEvent.RefreshData)
+        }
+    }
 
 
     SentinelTheme {
@@ -155,16 +164,3 @@ sealed class HomeUiEvent() {
     class AddTickerToSentinelWatchlist(val ticker: String) : HomeUiEvent()
     class RemoveTickerFromSentinelWatchlist(val ticker: String) : HomeUiEvent()
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
