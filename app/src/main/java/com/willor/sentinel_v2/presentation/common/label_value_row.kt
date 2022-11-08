@@ -1,7 +1,5 @@
 package com.willor.sentinel_v2.presentation.common
 
-import android.util.Log
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,17 +43,17 @@ private fun LabelText(
     ){
         Text(
             text = label,
-            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+            fontSize = MaterialTheme.typography.bodySmall.fontSize,
             fontWeight = FontWeight.Bold,
-            fontFamily = MaterialTheme.typography.titleSmall.fontFamily,
+            fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
             color = MaterialTheme.colorScheme.onSecondary,
         )
 
         Text(
             text = labelSuperScript,
             fontSize = 8.sp,
-            fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
-            fontFamily = MaterialTheme.typography.titleSmall.fontFamily,
+            fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
+            fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
             color = MaterialTheme.colorScheme.onSecondary,
             modifier = Modifier.align(Alignment.Top)
         )

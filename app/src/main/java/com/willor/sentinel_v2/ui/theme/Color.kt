@@ -3,7 +3,7 @@ package com.willor.sentinel_v2.ui.theme
 import androidx.compose.ui.graphics.Color
 
 //Primary + Gain/Loss will be valid for both Dark + Light mode
-val PrimaryGreen = Color(0xFF00993E)
+val PrimaryGreen = Color(0xFF006752)
 val OnPrimary = Color(0xFFFFFFFF)
 val GainGreen = Color(0xFF41F092)
 val LossRed = Color(0xFFF04172)

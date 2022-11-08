@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.ramcosta.composedestinations.DestinationsNavHost
-import com.willor.sentinel_v2.presentation.home.NavGraphs
+import com.willor.sentinel_v2.presentation.NavGraphs
 import com.willor.sentinel_v2.ui.theme.SentinelTheme
 import dagger.hilt.android.AndroidEntryPoint
 

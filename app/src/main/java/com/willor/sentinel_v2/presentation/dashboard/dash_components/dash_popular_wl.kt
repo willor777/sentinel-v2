@@ -1,0 +1,300 @@
+package com.willor.sentinel_v2.presentation.dashboard.dash_components
+
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddBox
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.PopularWatchlist
+import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.Ticker
+import com.willor.sentinel_v2.presentation.common.DropdownOptionSelector
+import com.willor.sentinel_v2.presentation.common.LabelValueRow
+import com.willor.sentinel_v2.presentation.dashboard.DashboardUiState
+import com.willor.sentinel_v2.ui.theme.GainGreen
+import com.willor.sentinel_v2.ui.theme.LossRed
+import com.willor.sentinel_v2.ui.theme.MySizes
+import com.willor.sentinel_v2.utils.calculateRatio
+import com.willor.sentinel_v2.utils.determineGainLossColor
+import com.willor.sentinel_v2.utils.formatChangeDollarAndChangePct
+import com.willor.sentinel_v2.utils.formatDoubleToTwoDecimalPlaceString
+import kotlinx.coroutines.launch
+
+
+@Composable
+fun DashPopularWl(
+    dashboardUiStateProvider: () -> State<DashboardUiState>,
+    onTickerCardClicked: (ticker: String) -> Unit,
+    onWlOptionClicked: (wlName: String) -> Unit,
+    onAddTickerClick: (ticker: String) -> Unit
+) {
+
+    val dashboardUiState = dashboardUiStateProvider()
+
+    var wlOptionsLoaded: List<String>? by remember {
+        mutableStateOf(null)
+    }
+    var curWatchlistLoaded: PopularWatchlist? by remember {
+        mutableStateOf(null)
+    }
+
+    val wlOptionsState = dashboardUiState.value.popularWatchlistOptions
+    val selectedWlState = dashboardUiState.value.popularWatchlistDisplayed
+
+    when (wlOptionsState) {
+        is DataState.Success -> {
+            wlOptionsLoaded = wlOptionsState.data!!.data
+        }
+    }
+
+    when (selectedWlState) {
+        is DataState.Success -> {
+            curWatchlistLoaded = selectedWlState.data!!
+        }
+    }
+
+    if (wlOptionsLoaded != null && curWatchlistLoaded != null) {
+        WatchlistDisplay(
+            wlOptionsList = wlOptionsLoaded!!,
+            curWatchlist = curWatchlistLoaded!!,
+            onWlOptionClicked = onWlOptionClicked,
+            onTickerCardClicked = onTickerCardClicked,
+            onAddTickerClick = onAddTickerClick
+        )
+    }
+
+}
+
+
+@Composable
+private fun WatchlistDisplay(
+    wlOptionsList: List<String>,
+    curWatchlist: PopularWatchlist,
+    onWlOptionClicked: (wlName: String) -> Unit,
+    onTickerCardClicked: (ticker: String) -> Unit,
+    onAddTickerClick: (ticker: String) -> Unit,
+) {
+
+    val wlScrollstate = rememberScrollState()
+    val cScope = rememberCoroutineScope()
+
+    Column(
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+
+    ) {
+        // Watchlist selector
+        DropdownOptionSelector(
+            optionsList = wlOptionsList,
+            curSelection = curWatchlist.data.name,
+            onItemClick = {
+                onWlOptionClicked(it)
+                cScope.launch { wlScrollstate.scrollTo(0) }
+            }
+        )
+
+
+        for (t in curWatchlist.data.tickers) {
+            ExpandableTickerCard(
+                ticker = t,
+                onTickerCardClicked = onTickerCardClicked,
+                searchIconClicked = onAddTickerClick
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun ExpandableTickerCard(
+    ticker: Ticker,
+    onTickerCardClicked: (ticker: String) -> Unit,
+    searchIconClicked: (ticker: String) -> Unit,
+) {
+
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    val curSize by animateDpAsState(
+        targetValue = if (expanded) 190.dp else 75.dp
+    )
+
+    val volRatio = calculateRatio(
+        ticker.volume.toDouble(),
+        ticker.volumeThirtyDayAvg.toDouble()
+    )
+
+    val volRatioColor = if (volRatio >= 1) {
+        GainGreen
+    } else {
+        LossRed
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(3.dp)
+            .wrapContentSize()
+//            .border(width = 2.dp, color = Color.Black)
+    ) {
+
+        Card(
+            modifier = Modifier.clickable {
+                expanded = !expanded
+            },
+            elevation = 2.dp,
+            border = BorderStroke(1.dp, color = Color.Gray)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(curSize)
+                    .padding(
+                        MySizes.HORIZONTAL_EDGE_PADDING,
+                        MySizes.VERTICAL_CONTENT_PADDING_SMALL
+                    ),
+                horizontalAlignment = Alignment.Start,
+            ) {
+                
+                TickerCardHeader(tickerSymbol = ticker.ticker, onAddButtonClicked = searchIconClicked)
+                
+                LabelValueRow(label = "Company Name", value = ticker.companyName)
+
+                LabelValueRow(
+                    label = "Days Change",
+                    value = formatChangeDollarAndChangePct(
+                        ticker.changeDollar,
+                        ticker.changePercent
+                    ),
+                    valueColor = determineGainLossColor(ticker.changePercent)
+                )
+                LabelValueRow(
+                    label = "Last Price",
+                    value = "$ ${formatDoubleToTwoDecimalPlaceString(ticker.lastPrice)}"
+                )
+
+                LabelValueRow(
+                    label = "Volume",
+                    labelSuperScript = "Today",
+                    value = ticker.volume.toString()
+                )
+
+                LabelValueRow(
+                    label = "Avg Volume",
+                    labelSuperScript = "30day",
+                    value = ticker.volumeThirtyDayAvg.toString()
+                )
+
+                LabelValueRow(
+                    label = "Vol / Avg Vol ratio",
+                    value = formatDoubleToTwoDecimalPlaceString(volRatio),
+                    valueColor = volRatioColor
+                )
+                
+                LabelValueRow(label = "Market Cap", value = ticker.marketCapAbbreviatedString)
+
+                SearchIconRow(onClick = {onTickerCardClicked(ticker.ticker)})
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchIconRow(onClick: () -> Unit) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        horizontalArrangement = Arrangement.End
+    ){
+        IconButton(onClick = {onClick()}) {
+            Icon(Icons.Filled.Search, "search-ticker",
+            tint = MaterialTheme.colorScheme.onSecondary)
+        }
+    }
+
+}
+
+
+@Composable
+private fun TickerCardHeader(
+    tickerSymbol: String,
+    onAddButtonClicked: (ticker: String) -> Unit,
+) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(22.dp)
+            .background(MaterialTheme.colorScheme.primary),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+
+        // Header
+        Text(
+            text = tickerSymbol,
+            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+            fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
+            fontFamily = MaterialTheme.typography.titleMedium.fontFamily,
+            fontStyle = MaterialTheme.typography.titleMedium.fontStyle,
+            color = MaterialTheme.colorScheme.onPrimary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(
+                horizontal = MySizes.HORIZONTAL_EDGE_PADDING,
+                vertical = 0.dp
+            )
+        )
+        
+        IconButton(
+            onClick = { onAddButtonClicked(tickerSymbol) }
+        ) {
+            Icon(
+                
+                Icons.Filled.AddBox,
+                "add-ticker-to-sentinel-watchlist",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(15.dp)
+            )
+        }
+
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,7 +1,7 @@
 package com.willor.lib_data.domain
 
 import com.willor.lib_data.data.local.prefs.UserPreferences
-import com.willor.lib_data.domain.dataobjs.NetworkState
+import com.willor.lib_data.domain.dataobjs.DataState
 import com.willor.lib_data.domain.dataobjs.responses.chart_resp.StockChart
 import com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp.EtfQuote
 import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.MajorFutures
@@ -20,51 +20,51 @@ interface Repo {
 
     suspend
     fun getStockChart(ticker: String, interval: String, periodRange: String, prepost: Boolean)
-    : Flow<NetworkState<StockChart?>>
+    : Flow<DataState<StockChart?>>
 
     suspend
     fun getMajorFutures()
-    : Flow<NetworkState<MajorFutures?>>
+    : Flow<DataState<MajorFutures?>>
 
     suspend
     fun getMajorIndices()
-    : Flow<NetworkState<MajorIndices?>>
+    : Flow<DataState<MajorIndices?>>
 
     suspend
     fun getStockCompetitors(ticker: String)
-    : Flow<NetworkState<StockCompetitors?>>
+    : Flow<DataState<StockCompetitors?>>
 
     suspend
     fun getStockSnrLevels(ticker: String)
-    : Flow<NetworkState<StockSnrLevels?>>
+    : Flow<DataState<StockSnrLevels?>>
 
     suspend
     fun getOptionsOverview(ticker: String)
-    : Flow<NetworkState<OptionsOverview?>>
+    : Flow<DataState<OptionsOverview?>>
 
     suspend
     fun getUnusualOptionsActivity(page: Int = 0)
-    : Flow<NetworkState<UoaPage?>>
+    : Flow<DataState<UoaPage?>>
 
     suspend
     fun getStockQuote(ticker: String)
-    : Flow<NetworkState<StockQuote?>>
+    : Flow<DataState<StockQuote?>>
 
     suspend
     fun getEtfQuote(ticker: String)
-    : Flow<NetworkState<EtfQuote?>>
+    : Flow<DataState<EtfQuote?>>
 
     suspend
     fun getAllAvailablePopularWatchlistOptions()
-    : Flow<NetworkState<PopularWatchlistOptions?>>
+    : Flow<DataState<PopularWatchlistOptions?>>
 
     suspend
     fun getPopularWatchlist(wlName: String)
-    : Flow<NetworkState<PopularWatchlist?>>
+    : Flow<DataState<PopularWatchlist?>>
 
     suspend
     fun getPopularWatchlistBySearchTags(searchTags: String)
-    : Flow<NetworkState<PopularWatchlistSearch?>>
+    : Flow<DataState<PopularWatchlistSearch?>>
 
     suspend
     fun getUserPreferences(): Flow<UserPreferences>

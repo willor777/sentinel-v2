@@ -19,5 +19,7 @@ data class Ticker(
     @SerializedName("volume")
     val volume: Int,
     @SerializedName("volumeThirtyDayAvg")
-    val volumeThirtyDayAvg: Int
+    val volumeThirtyDayAvg: Int,
+    @SerializedName("marketCapAbbreviatedString")
+    val marketCapAbbreviatedString: String,
 )

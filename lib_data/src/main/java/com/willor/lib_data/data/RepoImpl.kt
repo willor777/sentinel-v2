@@ -5,7 +5,7 @@ import com.willor.lib_data.data.local.prefs.DatastorePreferencesManager
 import com.willor.lib_data.data.local.prefs.UserPreferences
 import com.willor.lib_data.data.remote.StockDataService
 import com.willor.lib_data.domain.Repo
-import com.willor.lib_data.domain.dataobjs.NetworkState
+import com.willor.lib_data.domain.dataobjs.DataState
 import com.willor.lib_data.domain.dataobjs.entities.StockChartEntity
 import com.willor.lib_data.domain.dataobjs.responses.chart_resp.StockChart
 import com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp.EtfQuote
@@ -38,7 +38,7 @@ class RepoImpl(
         interval: String,
         periodRange: String,
         prepost: Boolean
-    ): Flow<NetworkState<StockChart?>> {
+    ): Flow<DataState<StockChart?>> {
 
         val checkCache = {
 
@@ -68,12 +68,12 @@ class RepoImpl(
         return flow{
 
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 // Check for a cached version of chart, return if not null
                 val chartCache = checkCache()
                 if (chartCache != null){
-                    emit(NetworkState.Success(chartCache))
+                    emit(DataState.Success(chartCache))
                     return@flow
                 }
 
@@ -87,7 +87,7 @@ class RepoImpl(
                     // Verify data
                     val chart = chartRequest.body()
                     if (chart == null){
-                        emit(NetworkState.Error("Error: Network Request Failed." +
+                        emit(DataState.Error("Error: Network Request Failed." +
                                 " Null Response Body"))
                         return@flow
                     }
@@ -98,293 +98,293 @@ class RepoImpl(
                     )
 
                     // Return chart
-                    emit(NetworkState.Success(chart))
+                    emit(DataState.Success(chart))
                 }
 
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getMajorFutures()
-    : Flow<NetworkState<MajorFutures?>> {
+    : Flow<DataState<MajorFutures?>> {
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getMajorFutures()
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getMajorIndices()
-    : Flow<NetworkState<MajorIndices?>> {
+    : Flow<DataState<MajorIndices?>> {
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getMajorIndices()
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getStockCompetitors(ticker: String)
-    : Flow<NetworkState<StockCompetitors?>> {
+    : Flow<DataState<StockCompetitors?>> {
 
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getStockCompetitors(ticker)
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getStockSnrLevels(ticker: String)
-    : Flow<NetworkState<StockSnrLevels?>> {
+    : Flow<DataState<StockSnrLevels?>> {
 
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getStockSnrLevels(ticker)
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getOptionsOverview(ticker: String)
-    : Flow<NetworkState<OptionsOverview?>> {
+    : Flow<DataState<OptionsOverview?>> {
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getOptionsOverview(ticker)
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getUnusualOptionsActivity(page: Int)
-    : Flow<NetworkState<UoaPage?>> {
+    : Flow<DataState<UoaPage?>> {
 
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getUnusualOptionsActivity(page)
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getStockQuote(ticker: String)
-    : Flow<NetworkState<StockQuote?>> {
+    : Flow<DataState<StockQuote?>> {
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getStockQuote(ticker)
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getEtfQuote(ticker: String)
-    : Flow<NetworkState<EtfQuote?>> {
+    : Flow<DataState<EtfQuote?>> {
 
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getEtfQuote(ticker)
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getAllAvailablePopularWatchlistOptions()
-    : Flow<NetworkState<PopularWatchlistOptions?>> {
+    : Flow<DataState<PopularWatchlistOptions?>> {
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getAllAvailablePopularWatchlistOptions()
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getPopularWatchlist(wlName: String)
-    : Flow<NetworkState<PopularWatchlist?>> {
+    : Flow<DataState<PopularWatchlist?>> {
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getPopularWatchlist(wlName)
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }
 
 
     override suspend fun getPopularWatchlistBySearchTags(searchTags: String)
-    : Flow<NetworkState<PopularWatchlistSearch?>> {
+    : Flow<DataState<PopularWatchlistSearch?>> {
 
         return flow{
             try{
-                emit(NetworkState.Loading())
+                emit(DataState.Loading())
 
                 val resp = api.getPopularWatchlistsBySearchTags(searchTags)
 
                 if (resp.isSuccessful){
-                    emit(NetworkState.Success(resp.body()))
+                    emit(DataState.Success(resp.body()))
                 }
 
                 else{
-                    emit(NetworkState.Error("Error: Network Request Failed with" +
+                    emit(DataState.Error("Error: Network Request Failed with" +
                             " code: ${resp.code()}"))
                 }
 
             }catch (e: Exception){
                 logException(tag, e)
-                emit(NetworkState.Error("Error: $e"))
+                emit(DataState.Error("Error: $e"))
             }
         }
     }

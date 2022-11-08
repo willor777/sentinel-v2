@@ -49,3 +49,9 @@ fun determineGainLossColor(d: Double): Color {
 fun calculateRatio(curValue: Double, avgValue: Double): Double{
     return curValue / avgValue
 }
+
+
+// TODO Doesn't work
+fun isStockMarketOpen(): Boolean {
+    return false
+}
