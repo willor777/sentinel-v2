@@ -55,3 +55,16 @@ fun calculateRatio(curValue: Double, avgValue: Double): Double{
 fun isStockMarketOpen(): Boolean {
     return false
 }
+
+
+fun formatWatchlistNameForDisplay(wlName: String): String {
+    val wlNameSplit = wlName.lowercase().split("_")
+    val titledNames = mutableListOf<String>()
+    wlNameSplit.forEach {
+        titledNames.add(it.replaceFirstChar { character ->
+            character.uppercase()
+        }
+        )
+    }
+    return titledNames.joinToString(" ")
+}

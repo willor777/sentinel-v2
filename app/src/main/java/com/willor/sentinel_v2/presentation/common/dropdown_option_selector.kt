@@ -3,7 +3,6 @@ package com.willor.sentinel_v2.presentation.common
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Card
@@ -13,9 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.willor.sentinel_v2.ui.theme.DarkSelectedOption
-import com.willor.sentinel_v2.ui.theme.LightSelectedOption
 import com.willor.sentinel_v2.ui.theme.MySizes
+import com.willor.sentinel_v2.utils.formatWatchlistNameForDisplay
 
 
 @Composable
@@ -29,7 +27,6 @@ fun DropdownOptionSelector(
     val data by remember {
         mutableStateOf(
             optionsList.filter { it != curSelection }.sorted()     // Remove cur selection from list
-
         )
     }
 
@@ -50,7 +47,7 @@ fun DropdownOptionSelector(
             expanded = !expanded
         })
 
-        DropdownOptionsLazyCol(data, curSelection, expanded, onItemClick = {
+        DropdownOptionsLazyCol(data, expanded, onItemClick = {
             expanded = false
             onItemClick(it)
         })
@@ -60,7 +57,6 @@ fun DropdownOptionSelector(
 @Composable
 private fun DropdownOptionsLazyCol(
     data: List<String>,
-    curSelection: String,
     expanded: Boolean,
     onItemClick: (String) -> Unit
 ) {
@@ -102,10 +98,11 @@ private fun DropDownRowItem(
     ) {
 
         Text(
-            text = title,
+            text = formatWatchlistNameForDisplay(title),
             fontSize = MaterialTheme.typography.titleSmall.fontSize,
             fontFamily = MaterialTheme.typography.titleSmall.fontFamily,
             fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
+            color = MaterialTheme.colorScheme.onSecondary,
             modifier = Modifier.padding(MySizes.HORIZONTAL_CONTENT_PADDING_LARGE)
         )
     }
@@ -124,7 +121,7 @@ private fun CurrentSelectionCard(
         }
     ) {
         Text(
-            text = title,
+            text = formatWatchlistNameForDisplay(title),
             fontSize = MaterialTheme.typography.titleSmall.fontSize,
             fontFamily = MaterialTheme.typography.titleSmall.fontFamily,
             fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
@@ -135,6 +132,4 @@ private fun CurrentSelectionCard(
 }
 
 
-private fun reOrderList(curSelection: String, listOfOptions: List<String>): List<String> {
-    return listOfOptions.filter { it != curSelection }.sorted()
-}
+

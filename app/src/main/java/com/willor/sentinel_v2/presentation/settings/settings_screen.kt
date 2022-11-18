@@ -14,8 +14,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.willor.sentinel_v2.presentation.common.NavDrawer
-import com.willor.sentinel_v2.presentation.common.NavigationDestinations
-import com.willor.sentinel_v2.presentation.common.navigationController
+import com.willor.sentinel_v2.presentation.common.Screens
+import com.willor.sentinel_v2.presentation.common.navController
 import com.willor.sentinel_v2.presentation.settings.SettingsViewModel
 
 
@@ -28,7 +28,7 @@ fun SettingsScreen(
 ){
 
     SettingsContent(
-        navDrawerDestinationClicked = { navigationController(navigator, it) }
+        navDrawerDestinationClicked = { navController(navigator, it) }
     )
 }
 
@@ -36,7 +36,7 @@ fun SettingsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsContent(
-    navDrawerDestinationClicked: (NavigationDestinations) -> Unit
+    navDrawerDestinationClicked: (Screens) -> Unit
 ){
 
     val contentScrollState = rememberScrollState()
@@ -52,7 +52,7 @@ fun SettingsContent(
         floatingActionButton = {},
         drawerContent = {
             NavDrawer(
-                currentDestination = NavigationDestinations.Settings,
+                currentDestination = Screens.Settings,
                 destinationClicked = { navDrawerDestinationClicked(it) }
             )
         },

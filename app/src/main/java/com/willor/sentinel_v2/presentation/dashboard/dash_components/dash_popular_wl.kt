@@ -5,7 +5,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -25,7 +27,6 @@ import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.PopularWatc
 import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.Ticker
 import com.willor.sentinel_v2.presentation.common.DropdownOptionSelector
 import com.willor.sentinel_v2.presentation.common.LabelValueRow
-import com.willor.sentinel_v2.presentation.dashboard.DashboardUiState
 import com.willor.sentinel_v2.ui.theme.GainGreen
 import com.willor.sentinel_v2.ui.theme.LossRed
 import com.willor.sentinel_v2.ui.theme.MySizes
@@ -38,7 +39,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DashPopularWl(
-    dashboardUiStateProvider: () -> State<DashboardUiState>,
+    dashboardUiStateProvider: () -> DashboardUiState,
+    wlDispScrollStateProvider: () -> LazyListState,
     onTickerCardClicked: (ticker: String) -> Unit,
     onWlOptionClicked: (wlName: String) -> Unit,
     onAddTickerClick: (ticker: String) -> Unit
@@ -53,8 +55,8 @@ fun DashPopularWl(
         mutableStateOf(null)
     }
 
-    val wlOptionsState = dashboardUiState.value.popularWatchlistOptions
-    val selectedWlState = dashboardUiState.value.popularWatchlistDisplayed
+    val wlOptionsState = dashboardUiState.popularWatchlistOptions
+    val selectedWlState = dashboardUiState.popularWatchlistDisplayed
 
     when (wlOptionsState) {
         is DataState.Success -> {
@@ -72,6 +74,7 @@ fun DashPopularWl(
         WatchlistDisplay(
             wlOptionsList = wlOptionsLoaded!!,
             curWatchlist = curWatchlistLoaded!!,
+            wlDispScrollStateProvider = wlDispScrollStateProvider,
             onWlOptionClicked = onWlOptionClicked,
             onTickerCardClicked = onTickerCardClicked,
             onAddTickerClick = onAddTickerClick
@@ -85,37 +88,40 @@ fun DashPopularWl(
 private fun WatchlistDisplay(
     wlOptionsList: List<String>,
     curWatchlist: PopularWatchlist,
+    wlDispScrollStateProvider: () -> LazyListState,
     onWlOptionClicked: (wlName: String) -> Unit,
     onTickerCardClicked: (ticker: String) -> Unit,
     onAddTickerClick: (ticker: String) -> Unit,
 ) {
 
-    val wlScrollstate = rememberScrollState()
+    val wlScrollstate = rememberLazyListState()
     val cScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
-            .wrapContentHeight()
+            .fillMaxHeight(1f)
             .fillMaxWidth()
 
     ) {
         // Watchlist selector
-        DropdownOptionSelector(
-            optionsList = wlOptionsList,
-            curSelection = curWatchlist.data.name,
+        DropdownOptionSelector(optionsList = wlOptionsList,
+            curSelection = curWatchlist.watchlistData.name,
             onItemClick = {
                 onWlOptionClicked(it)
-                cScope.launch { wlScrollstate.scrollTo(0) }
+                cScope.launch { wlScrollstate.animateScrollToItem(0) }
+            })
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(), state = wlDispScrollStateProvider(),
+        ) {
+
+            items(curWatchlist.watchlistData.tickers.size) { itemIndex ->
+                ExpandableTickerCard(
+                    ticker = curWatchlist.watchlistData.tickers[itemIndex],
+                    onTickerCardClicked = onTickerCardClicked,
+                    searchIconClicked = onAddTickerClick
+                )
             }
-        )
-
-
-        for (t in curWatchlist.data.tickers) {
-            ExpandableTickerCard(
-                ticker = t,
-                onTickerCardClicked = onTickerCardClicked,
-                searchIconClicked = onAddTickerClick
-            )
         }
     }
 }
@@ -137,8 +143,7 @@ private fun ExpandableTickerCard(
     )
 
     val volRatio = calculateRatio(
-        ticker.volume.toDouble(),
-        ticker.volumeThirtyDayAvg.toDouble()
+        ticker.volume.toDouble(), ticker.volumeThirtyDayAvg.toDouble()
     )
 
     val volRatioColor = if (volRatio >= 1) {
@@ -157,32 +162,28 @@ private fun ExpandableTickerCard(
         Card(
             modifier = Modifier.clickable {
                 expanded = !expanded
-            },
-            elevation = 2.dp,
-            border = BorderStroke(1.dp, color = Color.Gray)
+            }, elevation = 2.dp, border = BorderStroke(1.dp, color = Color.Gray)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(curSize)
                     .padding(
-                        MySizes.HORIZONTAL_EDGE_PADDING,
-                        MySizes.VERTICAL_CONTENT_PADDING_SMALL
+                        MySizes.HORIZONTAL_EDGE_PADDING, MySizes.VERTICAL_CONTENT_PADDING_SMALL
                     ),
                 horizontalAlignment = Alignment.Start,
             ) {
-                
-                TickerCardHeader(tickerSymbol = ticker.ticker, onAddButtonClicked = searchIconClicked)
-                
+
+                TickerCardHeader(
+                    tickerSymbol = ticker.ticker, onAddButtonClicked = searchIconClicked
+                )
+
                 LabelValueRow(label = "Company Name", value = ticker.companyName)
 
                 LabelValueRow(
-                    label = "Days Change",
-                    value = formatChangeDollarAndChangePct(
-                        ticker.changeDollar,
-                        ticker.changePercent
-                    ),
-                    valueColor = determineGainLossColor(ticker.changePercent)
+                    label = "Days Change", value = formatChangeDollarAndChangePct(
+                        ticker.changeDollar, ticker.changePercent
+                    ), valueColor = determineGainLossColor(ticker.changePercent)
                 )
                 LabelValueRow(
                     label = "Last Price",
@@ -190,9 +191,7 @@ private fun ExpandableTickerCard(
                 )
 
                 LabelValueRow(
-                    label = "Volume",
-                    labelSuperScript = "Today",
-                    value = ticker.volume.toString()
+                    label = "Volume", labelSuperScript = "Today", value = ticker.volume.toString()
                 )
 
                 LabelValueRow(
@@ -206,14 +205,17 @@ private fun ExpandableTickerCard(
                     value = formatDoubleToTwoDecimalPlaceString(volRatio),
                     valueColor = volRatioColor
                 )
-                
-                LabelValueRow(label = "Market Cap", value = ticker.marketCapAbbreviatedString)
 
-                SearchIconRow(onClick = {onTickerCardClicked(ticker.ticker)})
+                LabelValueRow(
+                    label = "Market Cap", value = "$ ${ticker.marketCapAbbreviatedString}"
+                )
+
+                SearchIconRow(onClick = { onTickerCardClicked(ticker.ticker) })
             }
         }
     }
 }
+
 
 @Composable
 private fun SearchIconRow(onClick: () -> Unit) {
@@ -223,10 +225,14 @@ private fun SearchIconRow(onClick: () -> Unit) {
             .fillMaxWidth()
             .wrapContentHeight(),
         horizontalArrangement = Arrangement.End
-    ){
-        IconButton(onClick = {onClick()}) {
-            Icon(Icons.Filled.Search, "search-ticker",
-            tint = MaterialTheme.colorScheme.onSecondary)
+    ) {
+        IconButton(onClick = { onClick() }) {
+            Icon(
+                Icons.Filled.Search,
+                contentDescription = "search-ticker",
+                tint = MaterialTheme.colorScheme.onSecondary,
+                modifier = Modifier.size(20.dp, 20.dp)
+            )
         }
     }
 
@@ -257,44 +263,21 @@ private fun TickerCardHeader(
             color = MaterialTheme.colorScheme.onPrimary,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(
-                horizontal = MySizes.HORIZONTAL_EDGE_PADDING,
-                vertical = 0.dp
+                horizontal = MySizes.HORIZONTAL_EDGE_PADDING, vertical = 0.dp
             )
         )
-        
-        IconButton(
-            onClick = { onAddButtonClicked(tickerSymbol) }
-        ) {
+
+        IconButton(onClick = { onAddButtonClicked(tickerSymbol) }) {
             Icon(
-                
+
                 Icons.Filled.AddBox,
                 "add-ticker-to-sentinel-watchlist",
                 tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(15.dp)
+                modifier = Modifier.size(15.dp, 15.dp)
             )
         }
 
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

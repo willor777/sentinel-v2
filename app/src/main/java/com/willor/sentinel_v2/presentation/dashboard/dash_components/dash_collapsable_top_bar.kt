@@ -1,9 +1,9 @@
 package com.willor.sentinel_v2.presentation.dashboard.dash_components
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.MenuOpen
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,23 +21,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.willor.lib_data.domain.dataobjs.DataState
 import com.willor.sentinel_v2.presentation.common.TickerCardLazyRow
-import com.willor.sentinel_v2.presentation.dashboard.DashboardUiState
 import com.willor.sentinel_v2.ui.theme.MySizes
 
 
 @Composable
 fun DashCollapsableTopBar(
-    dashUiStateProvider: () -> State<DashboardUiState>,
-    dashScrollState: () -> ScrollState,
+    dashUiStateProvider: () -> DashboardUiState,
+    dashScrollState: () -> LazyListState,
     onNavIconClick: () -> Unit,
     onSettingsIconClick: () -> Unit,
     onTickerCardClicked: (ticker: String) -> Unit
 ){
 
-//    val scrollState = remember{ dashScrollState() }
-
     val dstate by derivedStateOf {
-        dashScrollState().value > 224
+        dashScrollState().firstVisibleItemIndex > 0
     }
 
     val curHeight by animateDpAsState(
@@ -72,7 +68,7 @@ fun DashCollapsableTopBar(
 @Composable
 private fun ContentCrossfadeController(
     curHeight: Dp,
-    dashUiStateProvider: () -> State<DashboardUiState>,
+    dashUiStateProvider: () -> DashboardUiState,
     onTickerCardClicked: (ticker: String) -> Unit,
     onNavIconClick: () -> Unit,
     onSettingsIconClick: () -> Unit
@@ -89,14 +85,10 @@ private fun ContentCrossfadeController(
 //        Crossfade(targetState = curHeight) {
             when(curHeight){
                 224.dp -> {
-                    FullSizeTopBar(
-                        dashUiStateProvider, onTickerCardClicked, onNavIconClick, onSettingsIconClick
-                    )
+                    FullSizeTopBar(dashUiStateProvider, onTickerCardClicked)
                 }
                 112.dp -> {
-                    SmallSizeTopBar(
-                        dashUiStateProvider, onTickerCardClicked, onNavIconClick, onSettingsIconClick
-                    )
+                    SmallSizeTopBar(dashUiStateProvider, onTickerCardClicked)
                 }
             }
 //        }
@@ -108,15 +100,13 @@ private fun ContentCrossfadeController(
 
 @Composable
 private fun FullSizeTopBar(
-    dashUiStateProvider: () -> State<DashboardUiState>,
+    dashUiStateProvider: () -> DashboardUiState,
     onTickerCardClicked: (ticker: String) -> Unit,
-    onNavIconClick: () -> Unit,
-    onSettingsIconClick: () -> Unit
 ){
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(168.dp)
+            .height(168.dp)         // 224 is the actual size, but minus 56 for the base top bar
             .background(MaterialTheme.colorScheme.primary),
         verticalArrangement = Arrangement.Top
     ){
@@ -132,15 +122,13 @@ private fun FullSizeTopBar(
 
 @Composable
 private fun SmallSizeTopBar(
-    dashUiStateProvider: () -> State<DashboardUiState>,
+    dashUiStateProvider: () -> DashboardUiState,
     onTickerCardClicked: (ticker: String) -> Unit,
-    onNavIconClick: () -> Unit,
-    onSettingsIconClick: () -> Unit
 ){
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(56.dp)      // 112 is the actual size, but minus 56 for the base top bar
             .background(MaterialTheme.colorScheme.primary),
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -157,10 +145,10 @@ private fun SmallSizeTopBar(
 
 @Composable
 private fun CollapsedBarContent(
-    dashUiStateProvider: () -> State<DashboardUiState>,
+    dashUiStateProvider: () -> DashboardUiState,
     onTickerCardClicked: (ticker: String) -> Unit
 ){
-    val indexData = dashUiStateProvider().value.majorIndices
+    val indexData = dashUiStateProvider().majorIndices
 
     when (indexData){
         is DataState.Success -> {
@@ -199,12 +187,12 @@ private fun CollapsedBarContent(
  */
 @Composable
 private fun ExpandedBarContent(
-    dashUiStateProvider: () -> State<DashboardUiState>,
+    dashUiStateProvider: () -> DashboardUiState,
     onTickerCardClicked: (ticker: String) -> Unit
 ){
 
-    val futuresData = dashUiStateProvider().value.majorFutures
-    val indexData = dashUiStateProvider().value.majorIndices
+    val futuresData = dashUiStateProvider().majorFutures
+    val indexData = dashUiStateProvider().majorIndices
     when (futuresData){
         is DataState.Success -> {
 

@@ -8,6 +8,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
@@ -75,6 +77,14 @@ private fun ValueText(
         fontSize = MaterialTheme.typography.titleSmall.fontSize,
         fontWeight = FontWeight.Bold,
         fontFamily = MaterialTheme.typography.titleSmall.fontFamily,
-        color = color ?: MaterialTheme.colorScheme.onSecondary
+        color = color ?: MaterialTheme.colorScheme.onSecondary,
+
+        // These are all set so that if a company name is very long it will cut it down and ...
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.padding(
+            start = 20.dp,
+        )
+
     )
 }

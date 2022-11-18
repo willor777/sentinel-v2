@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class PopularWatchlist(
     @SerializedName("data")
-    val `data`: Data,
+    val watchlistData: WatchlistData,
     @SerializedName("lastUpdated")
     val lastUpdated: Long
 )

@@ -2,26 +2,31 @@ package com.willor.sentinel_v2.presentation.common
 
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.willor.sentinel_v2.presentation.destinations.DashboardScreenDestination
+import com.willor.sentinel_v2.presentation.destinations.QuoteScreenDestination
 import com.willor.sentinel_v2.presentation.destinations.SettingsScreenDestination
 
 
-fun navigationController(
+fun navController(
     navigator: DestinationsNavigator,
-    destination: NavigationDestinations
+    destination: Screens,
+    ticker: String? = null
 ){
     when (destination){
-        NavigationDestinations.Dashboard -> {
+        Screens.Dashboard -> {
             navigator.navigate(DashboardScreenDestination)
         }
-        NavigationDestinations.Settings -> {
+        Screens.Settings -> {
             navigator.navigate(SettingsScreenDestination)
+        }
+        Screens.Quotes -> {
+            navigator.navigate(QuoteScreenDestination(ticker = ticker))
         }
     }
 
 }
 
 
-enum class NavigationDestinations(val displayName: String){
+enum class Screens(val displayName: String){
     Dashboard("Dashboard"),
     Settings("Settings"),
     Quotes("Quotes"),

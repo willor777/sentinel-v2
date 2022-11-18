@@ -7,4 +7,7 @@ class UseCases(
     val getMajorIndicesUsecase: GetMajorIndicesUsecase,
     val getPopularWatchlistOptionsUsecase: GetPopularWatchlistOptionsUsecase,
     val getPopularWatchlistUsecase: GetPopularWatchlistUsecase,
+    val getStockQuoteUsecase: GetStockQuoteUsecase,
+    val getEtfQuoteUsecase: GetEtfQuoteUsecase,
+    val getOptionsOverviewUsecase: GetOptionsOverviewUsecase
 )

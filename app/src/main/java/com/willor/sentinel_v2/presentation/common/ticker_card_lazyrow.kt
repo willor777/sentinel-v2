@@ -23,23 +23,23 @@ fun TickerCardLazyRow(
     gainDollarList: List<Double>,
     gainPctList: List<Double>,
     onItemClicked: (ticker: String) -> Unit
-){
+) {
 
-        LazyRow(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ){
-            items(count = tickerList.lastIndex){ itemIndex ->
-                TickerCardItem(
-                    ticker = tickerList[itemIndex],
-                    gainDollar = gainDollarList[itemIndex],
-                    gainPct = gainPctList[itemIndex],
-                    onCardClicked = {
-                        onItemClicked(it)
-                    }
-                )
-            }
+    LazyRow(
+        modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        items(count = tickerList.lastIndex) { itemIndex ->
+            TickerCardItem(
+                ticker = tickerList[itemIndex],
+                gainDollar = gainDollarList[itemIndex],
+                gainPct = gainPctList[itemIndex],
+                onCardClicked = {
+                    onItemClicked(it)
+                }
+            )
         }
+    }
 }
 
 
@@ -49,24 +49,26 @@ private fun TickerCardItem(
     gainDollar: Double,
     gainPct: Double,
     onCardClicked: (ticker: String) -> Unit
-){
+) {
 
     val glColor = determineGainLossColor(gainDollar)
 
     Card(
-        modifier = Modifier.wrapContentSize()
+        modifier = Modifier
+            .wrapContentSize()
             .clickable {
                 onCardClicked(ticker)
             },
         shape = RoundedCornerShape(MySizes.CARD_ROUNDED_CORNER),
         elevation = MySizes.CARD_ELEVATION,
         backgroundColor = MaterialTheme.colorScheme.secondary
-    ){
+    ) {
         Column(
-            modifier = Modifier.wrapContentSize()
+            modifier = Modifier
+                .wrapContentSize()
                 .background(MaterialTheme.colorScheme.secondary),
             horizontalAlignment = Alignment.CenterHorizontally,
-        ){
+        ) {
 
             // Future Name
             Text(

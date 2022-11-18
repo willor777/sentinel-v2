@@ -67,7 +67,7 @@ interface Repo {
     : Flow<DataState<PopularWatchlistSearch?>>
 
     suspend
-    fun getUserPreferences(): Flow<UserPreferences>
+    fun getUserPreferences(): Flow<DataState<UserPreferences>>
 
     suspend
     fun saveUserPreferences(userPrefs: UserPreferences)

@@ -389,7 +389,7 @@ class RepoImpl(
         }
     }
 
-    override suspend fun getUserPreferences(): Flow<UserPreferences> {
+    override suspend fun getUserPreferences(): Flow<DataState<UserPreferences>> {
         return prefsManager.getUserPrefs()
     }
 

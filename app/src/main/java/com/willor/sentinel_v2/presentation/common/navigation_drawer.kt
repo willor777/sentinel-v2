@@ -1,25 +1,30 @@
 package com.willor.sentinel_v2.presentation.common
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.willor.sentinel_v2.ui.theme.MySizes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun NavDrawer(
-    currentDestination: NavigationDestinations,
-    destinationClicked: (NavigationDestinations) -> Unit,
+    currentDestination: Screens,
+    destinationClicked: (Screens) -> Unit,
 ){
     val currentDestinationDisplayname = currentDestination.displayName
     val allDestinations = mutableListOf<String>().apply {
         this.add(currentDestinationDisplayname)
-        NavigationDestinations.values().forEach {
+        Screens.values().forEach {
             if (it != currentDestination){ this.add(it.displayName) }
         }
     }
@@ -45,7 +50,7 @@ fun NavDrawer(
             Text(
                 modifier = Modifier.fillMaxWidth().clickable {
                         destinationClicked(
-                            NavigationDestinations.values().find {
+                            Screens.values().find {
                                 it.displayName == destinationDisplayName
                             }!!
                         )
@@ -66,6 +71,15 @@ fun NavDrawer(
 
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+fun openNavDrawer(
+    coroutineScope: CoroutineScope,
+    drawerState: DrawerState
+) = coroutineScope.launch {
+    Log.d("QUOTE_SCREEN", "openNavDrawer() called")
+    drawerState.open()
+}
 
 
 

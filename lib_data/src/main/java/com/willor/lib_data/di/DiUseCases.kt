@@ -42,16 +42,35 @@ object DiUseCases {
     }
 
     @Provides
+    fun provideGetStockQuoteUsecase(repo: Repo): GetStockQuoteUsecase {
+        return GetStockQuoteUsecase(repo)
+    }
+
+    @Provides
+    fun provideGetEtfQuoteUsecase(repo: Repo): GetEtfQuoteUsecase {
+        return GetEtfQuoteUsecase(repo)
+    }
+
+    @Provides
+    fun provideGetOptionsOverview(repo: Repo): GetOptionsOverviewUsecase {
+        return GetOptionsOverviewUsecase(repo)
+    }
+
+    @Provides
     fun provideUsecases(
         majorFutures: GetMajorFuturesUsecase,
         majorIndices: GetMajorIndicesUsecase,
         popWlOptions: GetPopularWatchlistOptionsUsecase,
         popWl: GetPopularWatchlistUsecase,
         userPrefs: GetUserPreferencesUsecase,
-        saveUserPrefs: SaveUserPreferencesUsecase
+        saveUserPrefs: SaveUserPreferencesUsecase,
+        stockQuote: GetStockQuoteUsecase,
+        etfQuote: GetEtfQuoteUsecase,
+        options: GetOptionsOverviewUsecase
     ): UseCases{
         return UseCases(
-            userPrefs, saveUserPrefs, majorFutures, majorIndices, popWlOptions, popWl
+            userPrefs, saveUserPrefs, majorFutures, majorIndices, popWlOptions, popWl,
+            stockQuote, etfQuote, options
         )
     }
 }

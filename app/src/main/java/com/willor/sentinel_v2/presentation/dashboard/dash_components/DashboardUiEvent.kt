@@ -1,4 +1,4 @@
-package com.willor.sentinel_v2.presentation.dashboard
+package com.willor.sentinel_v2.presentation.dashboard.dash_components
 
 sealed interface DashboardUiEvent{
     object InitialLoad : DashboardUiEvent
