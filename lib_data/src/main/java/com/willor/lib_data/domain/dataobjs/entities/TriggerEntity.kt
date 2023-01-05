@@ -8,7 +8,6 @@ import com.willor.lib_data.data.local.db.StockDataDb
 
 @Entity(tableName = StockDataDb.TRIGGER_TABLE)
 data class TriggerEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo val ticker: String,
     @ColumnInfo val triggerAnalysisName: String,
     @ColumnInfo val triggerAnalysisDesc: String,
@@ -17,5 +16,7 @@ data class TriggerEntity(
     @ColumnInfo val pctGainAtTime: Double,
     @ColumnInfo val dollarGainAtTime: Double,
     @ColumnInfo val timestamp: Long,
-    @ColumnInfo val curVolAvgVolRatio: Double
+    @ColumnInfo val curVolAvgVolRatio: Double,
+    @PrimaryKey(autoGenerate = true) val id: Int? = null,
+
     )

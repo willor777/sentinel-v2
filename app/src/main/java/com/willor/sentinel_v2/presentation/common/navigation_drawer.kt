@@ -56,7 +56,6 @@ fun NavDrawer(
                         )
                     },
                 text = destinationDisplayName,
-//                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                 fontSize = fontSize,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
@@ -77,7 +76,6 @@ fun openNavDrawer(
     coroutineScope: CoroutineScope,
     drawerState: DrawerState
 ) = coroutineScope.launch {
-    Log.d("QUOTE_SCREEN", "openNavDrawer() called")
     drawerState.open()
 }
 

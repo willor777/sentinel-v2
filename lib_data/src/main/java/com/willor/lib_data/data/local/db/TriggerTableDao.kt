@@ -19,6 +19,10 @@ interface TriggerTableDao {
 
     @Delete
     suspend fun deleteTrigger(triggerEntity: TriggerEntity)
+    
+    
+    @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE}")
+    fun getAllTriggers(): Flow<List<TriggerEntity>?>
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE id = :id")
@@ -26,29 +30,29 @@ interface TriggerTableDao {
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE ticker = :ticker")
-    fun getAllTriggersForTicker(ticker: String): Flow<List<TriggerEntity?>>
+    fun getAllTriggersForTicker(ticker: String): Flow<List<TriggerEntity>?>
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE triggerValue > 0")
-    fun getAllLongTriggers(): Flow<List<TriggerEntity?>>
+    fun getAllLongTriggers(): Flow<List<TriggerEntity>?>
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE triggerValue < 0")
-    fun getAllShortTriggers(): Flow<List<TriggerEntity?>>
+    fun getAllShortTriggers(): Flow<List<TriggerEntity>?>
 
 
     @Query(
         "SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE timestamp BETWEEN :startTime AND :endTime"
     )
-    fun getAllTriggersInTimeframe(startTime: Long, endTime: Long): Flow<List<TriggerEntity?>>
+    fun getAllTriggersInTimeframe(startTime: Long, endTime: Long): Flow<List<TriggerEntity>?>
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE triggerValue > 0 AND ticker = :ticker")
-    fun getAllLongTriggersForTicker(ticker: String): Flow<List<TriggerEntity?>>
+    fun getAllLongTriggersForTicker(ticker: String): Flow<List<TriggerEntity>?>
 
 
     @Query("SELECT * FROM ${StockDataDb.TRIGGER_TABLE} WHERE triggerValue < 0 AND ticker = :ticker")
-    fun getAllShortTriggersForTicker(ticker: String): Flow<List<TriggerEntity?>>
+    fun getAllShortTriggersForTicker(ticker: String): Flow<List<TriggerEntity>?>
 
 
     @Query(
@@ -56,7 +60,7 @@ interface TriggerTableDao {
                 "AND timestamp < :endTime AND timestamp > :startTime"
     )
     fun getAllTriggersForTickerInTimeframe(ticker: String, startTime: Long, endTime: Long)
-    : Flow<List<TriggerEntity?>>
+    : Flow<List<TriggerEntity>?>
 
 
     @Query(
@@ -64,7 +68,7 @@ interface TriggerTableDao {
                 "AND timestamp BETWEEN :endTime AND  :startTime"
     )
     fun getAllLongTriggersForTickerInTimeframe(ticker: String, startTime: Long, endTime: Long)
-    : Flow<List<TriggerEntity?>>
+    : Flow<List<TriggerEntity>?>
 
 
     @Query(
@@ -72,7 +76,7 @@ interface TriggerTableDao {
                 "AND timestamp BETWEEN :endTime AND  :startTime"
     )
     fun getAllShortTriggersForTickerInTimeframe(ticker: String, startTime: Long, endTime: Long)
-    : Flow<List<TriggerEntity?>>
+    : Flow<List<TriggerEntity>?>
 
 }
 

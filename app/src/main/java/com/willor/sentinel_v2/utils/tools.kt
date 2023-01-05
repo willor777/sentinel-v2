@@ -3,6 +3,9 @@ package com.willor.sentinel_v2.utils
 import androidx.compose.ui.graphics.Color
 import com.willor.sentinel_v2.ui.theme.GainGreen
 import com.willor.sentinel_v2.ui.theme.LossRed
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 fun formatChangeDollarAndChangePct(
@@ -37,6 +40,42 @@ fun formatDoubleToTwoDecimalPlaceString(d: Double): String{
 }
 
 
+
+fun formatWatchlistNameForDisplay(wlName: String): String {
+    val wlNameSplit = wlName.lowercase().split("_")
+    val titledNames = mutableListOf<String>()
+    wlNameSplit.forEach {
+        titledNames.add(it.replaceFirstChar { character ->
+            character.uppercase()
+        }
+        )
+    }
+    return titledNames.joinToString(" ")
+}
+
+
+fun formatIntegerToString(i: Int): String{
+    return NumberFormat.getIntegerInstance().format(i)
+}
+
+
+fun formatDateToStringMMDDYYYY(d: String): String{
+    val stageOneFormat = SimpleDateFormat("MMM dd, yyyy, hh:mm:ss a")
+    val date = stageOneFormat.parse(d)
+
+    val sdf = SimpleDateFormat("MM/dd/yyyy")
+    return sdf.format(date!!)
+}
+
+
+fun formatTimestampToStringDateWithTime(ts: Long): String{
+    val sdf = SimpleDateFormat("MM-dd-yyyy @ hh:mm:ss a")
+    val d = Date(ts)
+
+    return sdf.format(d)
+}
+
+
 fun determineGainLossColor(d: Double): Color {
     return if (d > 0){
         GainGreen
@@ -57,14 +96,31 @@ fun isStockMarketOpen(): Boolean {
 }
 
 
-fun formatWatchlistNameForDisplay(wlName: String): String {
-    val wlNameSplit = wlName.lowercase().split("_")
-    val titledNames = mutableListOf<String>()
-    wlNameSplit.forEach {
-        titledNames.add(it.replaceFirstChar { character ->
-            character.uppercase()
-        }
-        )
-    }
-    return titledNames.joinToString(" ")
+
+fun dateStringFromTimestamp(ts: Long): String{
+    val sdf = SimpleDateFormat("MMM-dd-yyyy hh:mm:ss a")
+    return sdf.format(Date(ts))
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

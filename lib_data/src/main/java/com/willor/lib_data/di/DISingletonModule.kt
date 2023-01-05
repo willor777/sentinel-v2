@@ -8,6 +8,7 @@ import com.willor.lib_data.data.remote.RetrofitApi
 import com.willor.lib_data.data.remote.StockDataService
 import com.willor.lib_data.domain.Repo
 import com.willor.lib_data.data.RepoImpl
+import com.willor.lib_data.data.UoaPagingSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

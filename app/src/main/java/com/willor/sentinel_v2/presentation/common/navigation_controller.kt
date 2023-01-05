@@ -1,9 +1,7 @@
 package com.willor.sentinel_v2.presentation.common
 
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.willor.sentinel_v2.presentation.destinations.DashboardScreenDestination
-import com.willor.sentinel_v2.presentation.destinations.QuoteScreenDestination
-import com.willor.sentinel_v2.presentation.destinations.SettingsScreenDestination
+import com.willor.sentinel_v2.presentation.destinations.*
 
 
 fun navController(
@@ -21,6 +19,15 @@ fun navController(
         Screens.Quotes -> {
             navigator.navigate(QuoteScreenDestination(ticker = ticker))
         }
+        Screens.UnusualOptionsActivity -> {
+            navigator.navigate(UoaScreenDestination)
+        }
+        Screens.Scanner -> {
+            navigator.navigate(ScannerScreenDestination)
+        }
+        Screens.AnalystsChanges -> {
+            navigator.navigate(AnalystsChangesScreenDestination)
+        }
     }
 
 }
@@ -30,6 +37,8 @@ enum class Screens(val displayName: String){
     Dashboard("Dashboard"),
     Settings("Settings"),
     Quotes("Quotes"),
-    UnusualOptionsActivity("Unusual Option Activity")
+    UnusualOptionsActivity("Unusual Option Activity"),
+    Scanner("Scanner"),
+    AnalystsChanges("Analysts Changes")
 }
 

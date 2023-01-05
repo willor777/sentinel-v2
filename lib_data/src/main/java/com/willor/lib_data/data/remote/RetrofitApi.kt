@@ -7,7 +7,9 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitApi {
 
-    const val BASE_URL = "https://das-ktstockdata.herokuapp.com/"
+    // Google Cloud App Engine Url: https://das-ktstockdata-api.uc.r.appspot.com
+    // Heroku Salesforce Cloud Url: https://das-ktstockdata.herokuapp.com/
+    const val BASE_URL = "https://das-ktstockdata-api.uc.r.appspot.com"
 
     private val retrofit = Retrofit.Builder()
         .client(

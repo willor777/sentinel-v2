@@ -14,6 +14,4 @@ interface ChartTableDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertChart(stockChartEntity: StockChartEntity)
-
-
 }

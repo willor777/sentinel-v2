@@ -63,5 +63,7 @@ data class Data(
     @SerializedName("ticker")
     val ticker: String,
     @SerializedName("volume")
-    val volume: Int
+    val volume: Int,
+    @SerializedName("name")
+    val name: String,
 )

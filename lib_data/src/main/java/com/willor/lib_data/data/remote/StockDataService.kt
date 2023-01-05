@@ -1,5 +1,6 @@
 package com.willor.lib_data.data.remote
 
+import com.willor.lib_data.domain.dataobjs.UoaFilterOptions
 import com.willor.lib_data.domain.dataobjs.responses.chart_resp.StockChart
 import com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp.EtfQuote
 import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.MajorFutures
@@ -52,7 +53,11 @@ interface StockDataService {
 
 
     @GET("/options/uoa")
-    suspend fun getUnusualOptionsActivity(@Query("page") page: Int = 0): Response<UoaPage?>
+    suspend fun getUnusualOptionsActivity(
+        @Query("page") page: Int = 0,
+        @Query("sort_asc") sortAsc: Boolean = true,
+        @Query("sort_by") sortBy: String
+    ): Response<UoaPage?>
 
 
     @GET("/quote/stock")

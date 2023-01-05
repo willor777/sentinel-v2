@@ -1,12 +1,15 @@
 package com.willor.lib_data.data
 
+import android.util.Log
 import com.willor.lib_data.data.local.db.StockDataDb
 import com.willor.lib_data.data.local.prefs.DatastorePreferencesManager
 import com.willor.lib_data.data.local.prefs.UserPreferences
 import com.willor.lib_data.data.remote.StockDataService
 import com.willor.lib_data.domain.Repo
 import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.UoaFilterOptions
 import com.willor.lib_data.domain.dataobjs.entities.StockChartEntity
+import com.willor.lib_data.domain.dataobjs.entities.TriggerEntity
 import com.willor.lib_data.domain.dataobjs.responses.chart_resp.StockChart
 import com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp.EtfQuote
 import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.MajorFutures
@@ -237,14 +240,17 @@ class RepoImpl(
     }
 
 
-    override suspend fun getUnusualOptionsActivity(page: Int)
-    : Flow<DataState<UoaPage?>> {
+    override suspend fun getUnusualOptionsActivity(
+        page: Int,
+        sortAsc: Boolean,
+        sortBy: UoaFilterOptions
+    ): Flow<DataState<UoaPage?>> {
 
         return flow{
             try{
                 emit(DataState.Loading())
 
-                val resp = api.getUnusualOptionsActivity(page)
+                val resp = api.getUnusualOptionsActivity(page, sortAsc, sortBy.key)
 
                 if (resp.isSuccessful){
                     emit(DataState.Success(resp.body()))
@@ -259,6 +265,24 @@ class RepoImpl(
                 logException(tag, e)
                 emit(DataState.Error("Error: $e"))
             }
+        }
+    }
+
+
+    override suspend fun getUoa(
+        page: Int,
+        sortAsc: Boolean,
+        sortBy: UoaFilterOptions
+    ): UoaPage? {
+        try {
+            val req = api.getUnusualOptionsActivity(page, sortAsc, sortBy.key)
+            if (req.isSuccessful) {
+                return req.body()!!
+            }
+            return null
+        } catch (e: Exception) {
+            logException(tag, e)
+            return null
         }
     }
 
@@ -389,11 +413,68 @@ class RepoImpl(
         }
     }
 
+
     override suspend fun getUserPreferences(): Flow<DataState<UserPreferences>> {
         return prefsManager.getUserPrefs()
     }
 
+
     override suspend fun saveUserPreferences(userPrefs: UserPreferences) {
         prefsManager.saveUserPrefs(userPrefs)
     }
+
+
+    override suspend fun createDummyTriggers(n: Int){
+        val dao = db.getTriggerTableDao()
+        for (i in 0..n){
+            Log.d(tag, "Dummy Trigger Created")
+            dao.insertTrigger(
+                TriggerEntity(
+                    "AAPL",
+                    "Test Analysis",
+                    "This Trigger is a Dummy",
+                    1,
+                    123.33,
+                    1.04,
+                    10.33,
+                    System.currentTimeMillis(),
+                    1.50,
+                )
+            )
+        }
+    }
+
+
+    override fun getTriggers(
+        id: Int?,
+        fromTime: Long?,
+        toTime: Long?,
+        ticker: String?,
+        onlyLong: Boolean,
+        onlyShort: Boolean
+    ): Flow<List<TriggerEntity>?> {
+
+        val dao = db.getTriggerTableDao()
+
+        when{
+            (id == null) -> {
+                return dao.getAllTriggers()
+            }
+            else -> {
+                return dao.getAllTriggers()
+            }
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+

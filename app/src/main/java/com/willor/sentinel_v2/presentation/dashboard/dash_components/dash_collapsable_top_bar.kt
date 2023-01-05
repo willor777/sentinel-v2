@@ -1,5 +1,6 @@
 package com.willor.sentinel_v2.presentation.dashboard.dash_components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.willor.lib_data.domain.dataobjs.DataState
 import com.willor.sentinel_v2.presentation.common.TickerCardLazyRow
 import com.willor.sentinel_v2.ui.theme.MySizes
+
 
 
 @Composable
@@ -33,18 +36,11 @@ fun DashCollapsableTopBar(
     onTickerCardClicked: (ticker: String) -> Unit
 ){
 
-    val dstate by derivedStateOf {
-        dashScrollState().firstVisibleItemIndex > 0
-    }
 
-    val curHeight by animateDpAsState(
-        if (dstate) 112.dp else 224.dp
-    )
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(curHeight)
             .background(MaterialTheme.colorScheme.primary)
             .padding(
                 top = MySizes.VERTICAL_EDGE_PADDING,
@@ -53,10 +49,10 @@ fun DashCollapsableTopBar(
                 end = MySizes.HORIZONTAL_EDGE_PADDING
             )
     ){
-        
+
         ContentCrossfadeController(
-            curHeight = curHeight,
             dashUiStateProvider = dashUiStateProvider,
+            dashScrollState = dashScrollState,
             onTickerCardClicked = onTickerCardClicked,
             onNavIconClick = onNavIconClick,
             onSettingsIconClick = onSettingsIconClick
@@ -67,12 +63,25 @@ fun DashCollapsableTopBar(
 
 @Composable
 private fun ContentCrossfadeController(
-    curHeight: Dp,
     dashUiStateProvider: () -> DashboardUiState,
+    dashScrollState: () -> LazyListState,
     onTickerCardClicked: (ticker: String) -> Unit,
     onNavIconClick: () -> Unit,
     onSettingsIconClick: () -> Unit
 ){
+
+//    val dstate by remember {
+//        derivedStateOf {
+//            dashScrollState().firstVisibleItemIndex > 0
+//        }
+//    }
+
+    val dstate = true
+
+    val curHeight by animateDpAsState(
+        if (dstate) 112.dp else 224.dp
+    )
+
     Column(
         modifier = Modifier.wrapContentSize()
     ){
@@ -82,7 +91,6 @@ private fun ContentCrossfadeController(
         )
 
         // Cross fade was making it janky so i turned it off
-//        Crossfade(targetState = curHeight) {
             when(curHeight){
                 224.dp -> {
                     FullSizeTopBar(dashUiStateProvider, onTickerCardClicked)
@@ -91,7 +99,6 @@ private fun ContentCrossfadeController(
                     SmallSizeTopBar(dashUiStateProvider, onTickerCardClicked)
                 }
             }
-//        }
     }
 
 
@@ -318,7 +325,6 @@ private fun BaseTopBar(
             Icon(Icons.Filled.Settings, "settings-icon", tint = Color.White)
         }
     }
-
 }
 
 

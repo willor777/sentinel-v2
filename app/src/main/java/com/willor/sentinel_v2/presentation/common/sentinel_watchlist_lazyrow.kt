@@ -18,52 +18,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.willor.lib_data.data.local.prefs.UserPreferences
 import com.willor.lib_data.domain.dataobjs.DataState
-import com.willor.sentinel_v2.presentation.dashboard.dash_components.DashboardUiState
+
 
 
 @Composable
 fun SentinelWatchlistLazyrow(
-    dashUiStateProvider: () -> DashboardUiState,
+    tickersList: () -> DataState<UserPreferences>,
     onRemoveIconClicked: (ticker: String) -> Unit,
     onCardClicked: (ticker: String) -> Unit,
 ) {
 
-    Log.d("DASHBOARD", "SentinelWatchlistComposed: ")
-
-    var tickerCards = listOf<String>()
-
-    when (dashUiStateProvider().userPrefs) {
-
+    when(tickersList()){
         is DataState.Success -> {
-            tickerCards =
-                (dashUiStateProvider().userPrefs as DataState.Success).data.sentinelWatchlist
+            SentinelWatchlistContent(
+                tickers = (tickersList() as DataState.Success).data.sentinelWatchlist,
+                onRemoveIconClicked,
+                onCardClicked)
         }
         else -> {
-            // Nothing is needed, Else block is here to follow Kotlin guidelines
+            listOf<String>()
         }
     }
 
-    SentinelWatchlistContent(tickerCards, onRemoveIconClicked, onCardClicked)
 }
 
 
 @Composable
 private fun SentinelWatchlistContent(
-    tickerCards: List<String>,
+    tickers: List<String>,
     onRemoveIconClicked: (ticker: String) -> Unit,
     onCardClicked: (ticker: String) -> Unit
 ) {
     LazyRow(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .height(60.dp)
             .background(MaterialTheme.colorScheme.primary),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items(tickerCards.size) { itemIndex ->
+        items(tickers.size) { itemIndex ->
             TickerCardWithX(
-                ticker = tickerCards[itemIndex],
+                ticker = tickers[itemIndex],
                 onRemoveIconClicked = onRemoveIconClicked,
                 onCardClicked = onCardClicked
             )

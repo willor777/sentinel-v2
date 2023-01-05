@@ -61,5 +61,8 @@ data class Data(
     @SerializedName("yearToDateTotalReturn")
     val yearToDateTotalReturn: Double,
     @SerializedName("yieldPercentage")
-    val yieldPercentage: Double
+    val yieldPercentage: Double,
+    @SerializedName("name")
+    val name: String,
+
 )

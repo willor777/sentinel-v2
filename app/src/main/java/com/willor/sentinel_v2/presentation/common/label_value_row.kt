@@ -1,6 +1,8 @@
 package com.willor.sentinel_v2.presentation.common
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -9,8 +11,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+
+@Composable
+fun LabelValueRow(
+    label: String,
+    labelSuperScript: String = "",
+    value: @Composable () -> Unit
+){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        LabelText(label = label, labelSuperScript = labelSuperScript)
+
+        value()
+    }
+}
 
 
 @Composable
@@ -19,7 +42,7 @@ fun LabelValueRow(
     value: String,
     labelSuperScript: String = "",
     valueColor: Color? = null
-){
+) {
 
     Row(
         modifier = Modifier
@@ -27,8 +50,9 @@ fun LabelValueRow(
             .wrapContentHeight(),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceBetween
-    ){
+    ) {
         LabelText(label = label, labelSuperScript = labelSuperScript)
+
         ValueText(value = value, valueColor)
     }
 }
@@ -38,11 +62,11 @@ fun LabelValueRow(
 private fun LabelText(
     label: String,
     labelSuperScript: String
-){
+) {
 
     Row(
         modifier = Modifier.wrapContentSize()
-    ){
+    ) {
         Text(
             text = label,
             fontSize = MaterialTheme.typography.bodySmall.fontSize,
@@ -65,12 +89,11 @@ private fun LabelText(
 }
 
 
-
 @Composable
 private fun ValueText(
     value: String,
     color: Color? = null
-){
+) {
 
     Text(
         text = value,

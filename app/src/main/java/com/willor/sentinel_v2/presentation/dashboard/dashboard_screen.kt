@@ -11,12 +11,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.willor.lib_data.domain.dataobjs.DataState
 import com.willor.sentinel_v2.presentation.common.*
 import com.willor.sentinel_v2.presentation.dashboard.dash_components.DashCollapsableTopBar
 import com.willor.sentinel_v2.presentation.dashboard.dash_components.DashPopularWl
 import com.willor.sentinel_v2.presentation.dashboard.dash_components.DashboardUiEvent
 import com.willor.sentinel_v2.presentation.dashboard.dash_components.DashboardUiState
-import com.willor.sentinel_v2.presentation.destinations.QuoteScreenDestination
+import com.willor.sentinel_v2.ui.theme.MySizes
 
 @RootNavGraph(start = true)
 @Destination
@@ -26,10 +27,9 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
 
-    viewModel.handleEvent(DashboardUiEvent.InitialLoad)
+    val init_load_once = remember{ viewModel.handleEvent(DashboardUiEvent.InitialLoad) }
 
     val uiState by viewModel.uiState.collectAsState()
-
 
     DashboardScreenContent(
         uiStateProvider = { uiState },
@@ -42,15 +42,9 @@ fun DashboardScreen(
         onTickerCardClicked = {
             navController(navigator, Screens.Quotes, ticker = it)
         },
-        onWlOptionClicked = {
-            viewModel.handleEvent(DashboardUiEvent.WatchlistOptionClicked(it))
-        },
-        onAddTickerClick = {
-            viewModel.handleEvent(DashboardUiEvent.AddTickerToSentinelWatchlist(it))
-        },
-        onRemoveIconClick = {
-            viewModel.handleEvent(DashboardUiEvent.RemoveTickerFromSentinelWatchlist(it))
-        }
+        onWlOptionClicked = viewModel::handleEvent,
+        onAddTickerClick = viewModel::handleEvent,
+        onRemoveIconClick = viewModel::handleEvent
     )
 }
 
@@ -62,9 +56,9 @@ private fun DashboardScreenContent(
     navDrawerDestinationClicked: (Screens) -> Unit,
     onSettingsIconClicked: () -> Unit,
     onTickerCardClicked: (ticker: String) -> Unit,
-    onWlOptionClicked: (wlName: String) -> Unit,
-    onAddTickerClick: (ticker: String) -> Unit,
-    onRemoveIconClick: (ticker: String) -> Unit,
+    onWlOptionClicked: (event: DashboardUiEvent) -> Unit,
+    onAddTickerClick: (event: DashboardUiEvent) -> Unit,
+    onRemoveIconClick: (event: DashboardUiEvent) -> Unit,
 ) {
 
     val watchlistScrollState = rememberLazyListState()
@@ -105,20 +99,32 @@ private fun DashboardScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(.9f)
+                    .padding(
+                        MySizes.VERTICAL_CONTENT_PADDING_SMALL,
+                        MySizes.HORIZONTAL_EDGE_PADDING
+                    )
             ) {
 
                 DashPopularWl(
                     dashboardUiStateProvider = uiStateProvider,
                     wlDispScrollStateProvider = { watchlistScrollState },
                     onTickerCardClicked = onTickerCardClicked,
-                    onWlOptionClicked = onWlOptionClicked,
-                    onAddTickerClick = onAddTickerClick
+                    onWlOptionClicked = {
+                        onWlOptionClicked(DashboardUiEvent.WatchlistOptionClicked(it))
+                    },
+                    onAddTickerClick = {
+                        onAddTickerClick(DashboardUiEvent.AddTickerToSentinelWatchlist(it))
+                    }
                 )
             }
 
             SentinelWatchlistLazyrow(
-                dashUiStateProvider = uiStateProvider,
-                onRemoveIconClicked = onRemoveIconClick,
+                tickersList = {
+                      uiStateProvider().userPrefs
+                },
+                onRemoveIconClicked = {
+                    onRemoveIconClick(DashboardUiEvent.RemoveTickerFromSentinelWatchlist(it))
+                },
                 onCardClicked = onTickerCardClicked
             )
 

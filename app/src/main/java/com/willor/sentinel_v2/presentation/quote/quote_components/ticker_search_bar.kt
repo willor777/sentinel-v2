@@ -1,5 +1,6 @@
 package com.willor.sentinel_v2.presentation.common
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,10 +18,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -32,10 +36,11 @@ import com.willor.sentinel_v2.presentation.quote.quote_components.QuoteUiState
 
 /*
 * TODO
-*  Idea when the search icon is clicked, just expand the search results. Then when the user
-* selects a drop down item, the quote screen loads.
+*   Idea when the search icon is clicked, just expand the search results. Then when the user
+*   selects a drop down item, the quote screen loads.
 * */
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TickerSearchBar(
     quoteUiStateProvider: () -> QuoteUiState,
@@ -44,6 +49,9 @@ fun TickerSearchBar(
 ) {
 
     val quoteUiState = quoteUiStateProvider()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     Column(
         modifier = Modifier
@@ -52,7 +60,10 @@ fun TickerSearchBar(
     ) {
 
         SearchBar(
-            onTextChange,
+            txt = quoteUiState.currentSearchText,
+            focusManager = focusManager,
+            keyboardController = keyboardController,
+            onTextChange = onTextChange,
             onSearchClick = {
                 // TODO Expand search results
             }
@@ -61,10 +72,13 @@ fun TickerSearchBar(
         if (quoteUiState.currentSearchResults.isNotEmpty()) {
             SearchResults(
                 resultsList = quoteUiState.currentSearchResults,
-                onOptionClicked = onSearchResultClicked
+                onOptionClicked = {
+                    onSearchResultClicked(it)
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                }
             )
         }
-
     }
 }
 
@@ -72,16 +86,12 @@ fun TickerSearchBar(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchBar(
+    txt: String,
+    focusManager: FocusManager,
+    keyboardController: SoftwareKeyboardController?,
     onTextChange: (userText: String) -> Unit,
     onSearchClick: (userText: String) -> Unit
 ) {
-
-    var txt by remember {
-        mutableStateOf("")
-    }
-
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     // Row contains SearchBar + SearchIcon
     Row(
@@ -99,18 +109,12 @@ private fun SearchBar(
                 .background(Color.LightGray),
             value = txt,
             onValueChange = { userTxt ->
-
-                var capped = ""
-
-                // Verify + Capitalize txt
-                for (c in userTxt) {
-                    if (c.isLetter()) {
-                        capped += c.uppercase()
-                    }
+                if (userTxt.isNotBlank() && userTxt[userTxt.lastIndex].isLetter()) {
+                    onTextChange(userTxt.uppercase())
                 }
-
-                txt = capped
-                onTextChange(txt)
+                if (userTxt.isBlank()){
+                    onTextChange("")
+                }
             },
             textStyle = TextStyle(
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
@@ -124,7 +128,6 @@ private fun SearchBar(
             keyboardActions = KeyboardActions(
                 onSearch = {
                     onSearchClick(txt)
-                    txt = ""
                     focusManager.clearFocus()
                 }
             )
@@ -139,7 +142,6 @@ private fun SearchBar(
                 .height(30.dp)
                 .clickable {
                     onSearchClick(txt)
-                    txt = ""
                     focusManager.clearFocus()
                     keyboardController?.hide()
                 },
@@ -161,13 +163,14 @@ private fun SearchResults(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
+            .wrapContentHeight()
             .height(200.dp)
     ) {
         items(resultsList.size) { i ->
             DropDownSearchResult(
                 data = resultsList[i],
                 onOptionClicked = onOptionClicked
-                )
+            )
         }
     }
 
@@ -191,9 +194,11 @@ private fun DropDownSearchResult(
     ) {
 
         Row(
-            modifier = Modifier.fillMaxHeight().width(100.dp),
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(100.dp),
             verticalAlignment = Alignment.Top
-        ){
+        ) {
             // Symbol
             Text(
                 text = data[0],

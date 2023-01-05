@@ -1,7 +1,6 @@
 package com.willor.sentinel_v2.presentation.dashboard.dash_components
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.willor.lib_data.domain.dataobjs.DataState
@@ -72,9 +70,9 @@ fun DashPopularWl(
 
     if (wlOptionsLoaded != null && curWatchlistLoaded != null) {
         WatchlistDisplay(
-            wlOptionsList = wlOptionsLoaded!!,
-            curWatchlist = curWatchlistLoaded!!,
-            wlDispScrollStateProvider = wlDispScrollStateProvider,
+            displayData = WatchlistDisplayData(
+                wlOptionsLoaded!!, curWatchlistLoaded!!, wlDispScrollStateProvider
+            ),
             onWlOptionClicked = onWlOptionClicked,
             onTickerCardClicked = onTickerCardClicked,
             onAddTickerClick = onAddTickerClick
@@ -84,11 +82,16 @@ fun DashPopularWl(
 }
 
 
+@Stable
+data class WatchlistDisplayData(
+    val options: List<String>,
+    val curWatchlist: PopularWatchlist,
+    val wlDispScrollStateProvider: () -> LazyListState
+)
+
 @Composable
 private fun WatchlistDisplay(
-    wlOptionsList: List<String>,
-    curWatchlist: PopularWatchlist,
-    wlDispScrollStateProvider: () -> LazyListState,
+    displayData: WatchlistDisplayData,
     onWlOptionClicked: (wlName: String) -> Unit,
     onTickerCardClicked: (ticker: String) -> Unit,
     onAddTickerClick: (ticker: String) -> Unit,
@@ -104,20 +107,21 @@ private fun WatchlistDisplay(
 
     ) {
         // Watchlist selector
-        DropdownOptionSelector(optionsList = wlOptionsList,
-            curSelection = curWatchlist.watchlistData.name,
+        DropdownOptionSelector(optionsList = displayData.options,
+            curSelection = displayData.curWatchlist.watchlistData.name,
             onItemClick = {
                 onWlOptionClicked(it)
                 cScope.launch { wlScrollstate.animateScrollToItem(0) }
             })
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(), state = wlDispScrollStateProvider(),
+            modifier = Modifier.fillMaxSize(),
+            state = displayData.wlDispScrollStateProvider(),
         ) {
 
-            items(curWatchlist.watchlistData.tickers.size) { itemIndex ->
+            items(displayData.curWatchlist.watchlistData.tickers.size) { itemIndex ->
                 ExpandableTickerCard(
-                    ticker = curWatchlist.watchlistData.tickers[itemIndex],
+                    ticker = displayData.curWatchlist.watchlistData.tickers[itemIndex],
                     onTickerCardClicked = onTickerCardClicked,
                     searchIconClicked = onAddTickerClick
                 )
@@ -125,6 +129,49 @@ private fun WatchlistDisplay(
         }
     }
 }
+
+//@Composable
+//private fun WatchlistDisplay(
+//    wlOptionsList: List<String>,
+//    curWatchlist: PopularWatchlist,
+//    wlDispScrollStateProvider: () -> LazyListState,
+//    onWlOptionClicked: (wlName: String) -> Unit,
+//    onTickerCardClicked: (ticker: String) -> Unit,
+//    onAddTickerClick: (ticker: String) -> Unit,
+//) {
+//
+//    val wlScrollstate = rememberLazyListState()
+//    val cScope = rememberCoroutineScope()
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxHeight(1f)
+//            .fillMaxWidth()
+//
+//    ) {
+//        // Watchlist selector
+//        DropdownOptionSelector(optionsList = wlOptionsList,
+//            curSelection = curWatchlist.watchlistData.name,
+//            onItemClick = {
+//                onWlOptionClicked(it)
+//                cScope.launch { wlScrollstate.animateScrollToItem(0) }
+//            })
+//
+//        LazyColumn(
+//            modifier = Modifier.fillMaxSize(),
+//            state = wlDispScrollStateProvider(),
+//        ) {
+//
+//            items(curWatchlist.watchlistData.tickers.size) { itemIndex ->
+//                ExpandableTickerCard(
+//                    ticker = curWatchlist.watchlistData.tickers[itemIndex],
+//                    onTickerCardClicked = onTickerCardClicked,
+//                    searchIconClicked = onAddTickerClick
+//                )
+//            }
+//        }
+//    }
+//}
 
 
 @Composable
@@ -139,7 +186,7 @@ private fun ExpandableTickerCard(
     }
 
     val curSize by animateDpAsState(
-        targetValue = if (expanded) 190.dp else 75.dp
+        targetValue = if (expanded) 190.dp else 82.dp
     )
 
     val volRatio = calculateRatio(
@@ -152,66 +199,63 @@ private fun ExpandableTickerCard(
         LossRed
     }
 
-    Column(
+    Card(
         modifier = Modifier
-            .padding(3.dp)
-            .wrapContentSize()
-//            .border(width = 2.dp, color = Color.Black)
-    ) {
-
-        Card(
-            modifier = Modifier.clickable {
+            .padding(vertical = MySizes.VERTICAL_CONTENT_PADDING_SMALL)
+            .clickable {
                 expanded = !expanded
-            }, elevation = 2.dp, border = BorderStroke(1.dp, color = Color.Gray)
+            },
+
+        elevation = 2.dp,
+//            border = BorderStroke(1.dp, color = Color.Gray)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(curSize)
+                .padding(
+                    MySizes.HORIZONTAL_EDGE_PADDING, MySizes.VERTICAL_CONTENT_PADDING_SMALL
+                ),
+            horizontalAlignment = Alignment.Start,
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(curSize)
-                    .padding(
-                        MySizes.HORIZONTAL_EDGE_PADDING, MySizes.VERTICAL_CONTENT_PADDING_SMALL
-                    ),
-                horizontalAlignment = Alignment.Start,
-            ) {
 
-                TickerCardHeader(
-                    tickerSymbol = ticker.ticker, onAddButtonClicked = searchIconClicked
-                )
+            TickerCardHeader(
+                tickerSymbol = ticker.ticker, onAddButtonClicked = searchIconClicked
+            )
 
-                LabelValueRow(label = "Company Name", value = ticker.companyName)
+            LabelValueRow(label = "Company Name", value = ticker.companyName)
 
-                LabelValueRow(
-                    label = "Days Change", value = formatChangeDollarAndChangePct(
-                        ticker.changeDollar, ticker.changePercent
-                    ), valueColor = determineGainLossColor(ticker.changePercent)
-                )
-                LabelValueRow(
-                    label = "Last Price",
-                    value = "$ ${formatDoubleToTwoDecimalPlaceString(ticker.lastPrice)}"
-                )
+            LabelValueRow(
+                label = "Days Change", value = formatChangeDollarAndChangePct(
+                    ticker.changeDollar, ticker.changePercent
+                ), valueColor = determineGainLossColor(ticker.changePercent)
+            )
+            LabelValueRow(
+                label = "Last Price",
+                value = "$ ${formatDoubleToTwoDecimalPlaceString(ticker.lastPrice)}"
+            )
 
-                LabelValueRow(
-                    label = "Volume", labelSuperScript = "Today", value = ticker.volume.toString()
-                )
+            LabelValueRow(
+                label = "Volume", labelSuperScript = "Today", value = ticker.volume.toString()
+            )
 
-                LabelValueRow(
-                    label = "Avg Volume",
-                    labelSuperScript = "30day",
-                    value = ticker.volumeThirtyDayAvg.toString()
-                )
+            LabelValueRow(
+                label = "Avg Volume",
+                labelSuperScript = "30day",
+                value = ticker.volumeThirtyDayAvg.toString()
+            )
 
-                LabelValueRow(
-                    label = "Vol / Avg Vol ratio",
-                    value = formatDoubleToTwoDecimalPlaceString(volRatio),
-                    valueColor = volRatioColor
-                )
+            LabelValueRow(
+                label = "Vol / Avg Vol ratio",
+                value = formatDoubleToTwoDecimalPlaceString(volRatio),
+                valueColor = volRatioColor
+            )
 
-                LabelValueRow(
-                    label = "Market Cap", value = "$ ${ticker.marketCapAbbreviatedString}"
-                )
+            LabelValueRow(
+                label = "Market Cap", value = "$ ${ticker.marketCapAbbreviatedString}"
+            )
 
-                SearchIconRow(onClick = { onTickerCardClicked(ticker.ticker) })
-            }
+            SearchIconRow(onClick = { onTickerCardClicked(ticker.ticker) })
         }
     }
 }
@@ -276,8 +320,6 @@ private fun TickerCardHeader(
                 modifier = Modifier.size(15.dp, 15.dp)
             )
         }
-
-
     }
 }
 

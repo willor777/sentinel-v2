@@ -93,25 +93,28 @@ class DashboardViewModel @Inject constructor(
     private fun addTickerToSentinelWatchlist(ticker: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            // Load user prefs, get cur watchlist, check if list already contains ticker
-            val userPrefs = (_uiState.value.userPrefs as DataState.Success).data
-            val curList = userPrefs.sentinelWatchlist.toMutableList()
-            if (curList.contains(ticker)) {
-                return@launch
+            if (_uiState.value.userPrefs is DataState.Success){
+                // Get cur watchlist, check if list already contains ticker
+                val userPrefs = (_uiState.value.userPrefs as DataState.Success).data
+                val curList = userPrefs.sentinelWatchlist.toMutableList()
+                if (curList.contains(ticker)) {
+                    return@launch
+                }
+
+                // Add ticker + update
+                curList.add(ticker)
+                userPrefs.sentinelWatchlist = curList.toList()
+                updateUserPrefs(userPrefs)
+
+                Log.d(tag, "Ticker added to user prefs watchlist: $ticker")
             }
-
-            // Add ticker + update
-            curList.add(ticker)
-            userPrefs.sentinelWatchlist = curList.toList()
-            updateUserPrefs(userPrefs)
-
-            Log.d(tag, "Ticker added to user prefs watchlist: $ticker")
         }
     }
 
 
     private fun removeTickerFromSentinelWatchlist(ticker: String) {
         viewModelScope.launch(Dispatchers.IO) {
+
             val userPrefs = (_uiState.value.userPrefs as DataState.Success).data
             val curList = userPrefs.sentinelWatchlist.toMutableList()
             curList.remove(ticker)
@@ -152,7 +155,7 @@ class DashboardViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 userPrefs = up
             )
-            Log.d(tag, "UserPrefs Loaded: $up")
+            Log.d(tag, "UserPrefs Loaded Successfully")
         }
     }
 
@@ -171,7 +174,7 @@ class DashboardViewModel @Inject constructor(
             // Update datastore
             useCases.saveUserPreferencesUsecase(userPrefs)
 
-            Log.d(tag, "UserPrefs Updated: $userPrefs")
+            Log.d(tag, "UserPrefs Updated Successfully")
         }
     }
 
@@ -202,7 +205,7 @@ class DashboardViewModel @Inject constructor(
                     majorFutures = it
                 )
 
-                Log.d(tag, "MajorFutures Loaded: $it")
+                Log.d(tag, "MajorFutures Loaded Successfully")
             }
         }
     }
@@ -219,7 +222,7 @@ class DashboardViewModel @Inject constructor(
                     majorIndices = it
                 )
 
-                Log.d(tag, "MajorIndices Loaded: $it")
+                Log.d(tag, "MajorIndices Loaded Successfully")
             }
         }
     }
@@ -237,7 +240,7 @@ class DashboardViewModel @Inject constructor(
                     popularWatchlistOptions = it
                 )
 
-                Log.d(tag, "PopularWatchlistOptions Loaded: $it")
+                Log.d(tag, "PopularWatchlistOptions Loaded Successfully")
             }
         }
     }
@@ -254,11 +257,10 @@ class DashboardViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     popularWatchlistDisplayed = it
                 )
-                Log.d(tag, "PopularWatchlist Loaded: ${it.toString()}")
 
                 when (it) {
                     is DataState.Success -> {
-                        Log.d(tag, "PopularWatchlist Success! Data: ${it.data}")
+                        Log.d(tag, "PopularWatchlist Success!")
                     }
                     is DataState.Loading -> {
                         Log.d(tag, "PopularWatchlist Loading!")

@@ -9,5 +9,9 @@ class UseCases(
     val getPopularWatchlistUsecase: GetPopularWatchlistUsecase,
     val getStockQuoteUsecase: GetStockQuoteUsecase,
     val getEtfQuoteUsecase: GetEtfQuoteUsecase,
-    val getOptionsOverviewUsecase: GetOptionsOverviewUsecase
+    val getOptionsOverviewUsecase: GetOptionsOverviewUsecase,
+    val getStockCompetitorsUsecase: GetStockCompetitorsUsecase,
+    val getSnrLevelsUsecase: GetSnrLevelsUsecase,
+    val getUoaUsecase: GetUoaUsecase,
+    val getTriggersUsecase: GetTriggersUsecase
 )

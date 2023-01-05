@@ -17,6 +17,20 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.6.10' apply false
 }
 
+
+// Compiler Arguuments
+allprojects {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all{
+
+        kotlinOptions{
+
+            // This compiler arg clears the warning about "requires opt-in, api may change"
+            freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+        }
+    }
+}
+
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

@@ -121,10 +121,14 @@ dependencies {
     // Coil Image Loading
     implementation "io.coil-kt:coil-compose:2.1.0"
 
+
+
     // My Stuff
     implementation 'com.github.willor777:loading-animation-composable:1.0.0-alpha'
+    implementation 'com.github.willor777:value-range-bar-composable:master-SNAPSHOT'
 
-
+    // Paging 3
+    implementation "androidx.paging:paging-compose:1.0.0-alpha17"
 
 }
 
