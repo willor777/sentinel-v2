@@ -121,14 +121,17 @@ dependencies {
     // Coil Image Loading
     implementation "io.coil-kt:coil-compose:2.1.0"
 
-
-
     // My Stuff
     implementation 'com.github.willor777:loading-animation-composable:1.0.0-alpha'
     implementation 'com.github.willor777:value-range-bar-composable:master-SNAPSHOT'
+    implementation 'com.github.willor777:stock-analysis-lib:1.0.5-alpha'
+
 
     // Paging 3
     implementation "androidx.paging:paging-compose:1.0.0-alpha17"
+
+    // Time Calculations
+    implementation 'com.github.kizitonwose.time:time-android:1.0.4'
 
 }
 

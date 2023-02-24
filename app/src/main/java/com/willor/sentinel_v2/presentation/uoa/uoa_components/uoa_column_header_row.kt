@@ -26,27 +26,27 @@ fun UoaColumnHeaderRow(
         modifier = Modifier.fillMaxWidth()
     ) {
 
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(15.dp))
 
         Text(
             text = "Ticker",
             style = MaterialTheme.typography.titleSmall,
             color = Color.Black,
-            modifier = Modifier.width(60.dp),
+            modifier = Modifier.width(75.dp),
         )
 
         Text(
             text = "Expiry",
             style = MaterialTheme.typography.titleSmall,
             color = Color.Black,
-            modifier = Modifier.width(90.dp),
+            modifier = Modifier.width(88.dp),
         )
 
         Text(
             text = "Type",
             style = MaterialTheme.typography.titleSmall,
             color = Color.Black,
-            modifier = Modifier.width(35.dp),
+            modifier = Modifier.width(54.dp),
         )
 
         Text(
@@ -54,15 +54,13 @@ fun UoaColumnHeaderRow(
             style = MaterialTheme.typography.titleSmall,
             color = Color.Black,
             modifier = Modifier.width(70.dp),
-            textAlign = TextAlign.End
         )
 
         Text(
             text = formatUoaFilterOptionName(sortedBy),
             style = MaterialTheme.typography.titleSmall,
             color = Color.Black,
-            modifier = Modifier.width(120.dp),
-            textAlign = TextAlign.End
+            modifier = Modifier.width(70.dp),
         )
 
     }

@@ -81,10 +81,3 @@ interface StockDataService {
 
 }
 
-
-fun main() {
-
-    runBlocking {
-        val serv = RetrofitApi.stockDataService
-    }
-}

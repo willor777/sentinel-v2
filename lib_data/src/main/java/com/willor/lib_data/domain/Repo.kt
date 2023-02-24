@@ -1,7 +1,7 @@
 package com.willor.lib_data.domain
 
 import com.willor.lib_data.data.local.prefs.UserPreferences
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.UoaFilterOptions
 import com.willor.lib_data.domain.dataobjs.entities.TriggerEntity
 import com.willor.lib_data.domain.dataobjs.responses.chart_resp.StockChart
@@ -20,25 +20,25 @@ import kotlinx.coroutines.flow.Flow
 
 interface Repo {
 
-    suspend fun getStockChart(
+    fun getStockChart(
         ticker: String, interval: String, periodRange: String, prepost: Boolean
-    ): Flow<DataState<StockChart?>>
+    ): Flow<DataResourceState<StockChart?>>
 
-    suspend fun getMajorFutures(): Flow<DataState<MajorFutures?>>
+    fun getMajorFutures(): Flow<DataResourceState<MajorFutures?>>
 
-    suspend fun getMajorIndices(): Flow<DataState<MajorIndices?>>
+    fun getMajorIndices(): Flow<DataResourceState<MajorIndices?>>
 
-    suspend fun getStockCompetitors(ticker: String): Flow<DataState<StockCompetitors?>>
+    fun getStockCompetitors(ticker: String): Flow<DataResourceState<StockCompetitors?>>
 
-    suspend fun getStockSnrLevels(ticker: String): Flow<DataState<StockSnrLevels?>>
+    fun getStockSnrLevels(ticker: String): Flow<DataResourceState<StockSnrLevels?>>
 
-    suspend fun getOptionsOverview(ticker: String): Flow<DataState<OptionsOverview?>>
+    fun getOptionsOverview(ticker: String): Flow<DataResourceState<OptionsOverview?>>
 
-    suspend fun getUnusualOptionsActivity(
+    fun getUnusualOptionsActivity(
         page: Int = 0,
         sortAsc: Boolean = true,
         sortBy: UoaFilterOptions = UoaFilterOptions.Volume_OI_Ratio
-    ): Flow<DataState<UoaPage?>>
+    ): Flow<DataResourceState<UoaPage?>>
 
     suspend fun getUoa(
         page: Int = 0,
@@ -46,24 +46,19 @@ interface Repo {
         sortBy: UoaFilterOptions = UoaFilterOptions.Volume_OI_Ratio
     ): UoaPage?
 
-    suspend fun getStockQuote(ticker: String): Flow<DataState<StockQuote?>>
+    fun getStockQuote(ticker: String): Flow<DataResourceState<StockQuote?>>
 
-    suspend fun getEtfQuote(ticker: String): Flow<DataState<EtfQuote?>>
+    fun getEtfQuote(ticker: String): Flow<DataResourceState<EtfQuote?>>
 
-    suspend fun getAllAvailablePopularWatchlistOptions(): Flow<DataState<PopularWatchlistOptions?>>
+    fun getAllAvailablePopularWatchlistOptions(): Flow<DataResourceState<PopularWatchlistOptions?>>
 
-    suspend fun getPopularWatchlist(wlName: String): Flow<DataState<PopularWatchlist?>>
+    fun getPopularWatchlist(wlName: String): Flow<DataResourceState<PopularWatchlist?>>
 
-    suspend fun getPopularWatchlistBySearchTags(searchTags: String): Flow<DataState<PopularWatchlistSearch?>>
+    fun getPopularWatchlistBySearchTags(searchTags: String): Flow<DataResourceState<PopularWatchlistSearch?>>
 
-    suspend fun getUserPreferences(): Flow<DataState<UserPreferences>>
+    fun getUserPreferences(): Flow<DataResourceState<UserPreferences>>
 
     suspend fun saveUserPreferences(userPrefs: UserPreferences)
-
-
-    // TODO Remove This
-    suspend fun createDummyTriggers(n: Int)
-
 
     fun getTriggers(
         id: Int? = null,
@@ -73,6 +68,8 @@ interface Repo {
         onlyLong: Boolean = false,
         onlyShort: Boolean = false,
     ): Flow<List<TriggerEntity>?>
+
+    suspend fun saveTriggers(vararg triggers: TriggerEntity)
 }
 
 

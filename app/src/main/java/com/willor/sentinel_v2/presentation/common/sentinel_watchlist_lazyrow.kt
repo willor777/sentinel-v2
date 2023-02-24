@@ -1,6 +1,5 @@
 package com.willor.sentinel_v2.presentation.common
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,21 +18,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.willor.lib_data.data.local.prefs.UserPreferences
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 
 
 
 @Composable
 fun SentinelWatchlistLazyrow(
-    tickersList: () -> DataState<UserPreferences>,
+    tickersList: () -> DataResourceState<UserPreferences>,
     onRemoveIconClicked: (ticker: String) -> Unit,
     onCardClicked: (ticker: String) -> Unit,
 ) {
 
     when(tickersList()){
-        is DataState.Success -> {
+        is DataResourceState.Success -> {
             SentinelWatchlistContent(
-                tickers = (tickersList() as DataState.Success).data.sentinelWatchlist,
+                tickers = (tickersList() as DataResourceState.Success).data.sentinelWatchlist,
                 onRemoveIconClicked,
                 onCardClicked)
         }

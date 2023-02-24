@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.willor.lib_data.data.local.prefs.UserPreferences
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.usecases.UseCases
 import com.willor.sentinel_v2.presentation.dashboard.dash_components.DashboardUiEvent
 import com.willor.sentinel_v2.presentation.dashboard.dash_components.DashboardUiState
@@ -60,7 +60,7 @@ class DashboardViewModel @Inject constructor(
                 loadMajorIndicesData()
 
                 val curWatchlist =
-                    (_uiState.value.userPrefs as DataState.Success).data.lastPopularWatchlistSelected
+                    (_uiState.value.userPrefs as DataResourceState.Success).data.lastPopularWatchlistSelected
                 loadWatchlist(curWatchlist)
             }
 
@@ -93,9 +93,9 @@ class DashboardViewModel @Inject constructor(
     private fun addTickerToSentinelWatchlist(ticker: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            if (_uiState.value.userPrefs is DataState.Success){
+            if (_uiState.value.userPrefs is DataResourceState.Success){
                 // Get cur watchlist, check if list already contains ticker
-                val userPrefs = (_uiState.value.userPrefs as DataState.Success).data
+                val userPrefs = (_uiState.value.userPrefs as DataResourceState.Success).data
                 val curList = userPrefs.sentinelWatchlist.toMutableList()
                 if (curList.contains(ticker)) {
                     return@launch
@@ -115,7 +115,7 @@ class DashboardViewModel @Inject constructor(
     private fun removeTickerFromSentinelWatchlist(ticker: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            val userPrefs = (_uiState.value.userPrefs as DataState.Success).data
+            val userPrefs = (_uiState.value.userPrefs as DataResourceState.Success).data
             val curList = userPrefs.sentinelWatchlist.toMutableList()
             curList.remove(ticker)
             userPrefs.sentinelWatchlist = curList
@@ -133,12 +133,12 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             // Wait for userPrefs to be loaded
-            while (this.isActive && _uiState.value.userPrefs !is DataState.Success) {
+            while (this.isActive && _uiState.value.userPrefs !is DataResourceState.Success) {
                 delay(500)
             }
 
             // Cast userPrefs and load the watchlist last selected
-            val userPrefs = (_uiState.value.userPrefs as DataState.Success).data
+            val userPrefs = (_uiState.value.userPrefs as DataResourceState.Success).data
             loadWatchlist(userPrefs.lastPopularWatchlistSelected)
         }
     }
@@ -168,7 +168,7 @@ class DashboardViewModel @Inject constructor(
 
             // Local update
             _uiState.value = _uiState.value.copy(
-                userPrefs = DataState.Success(userPrefs)
+                userPrefs = DataResourceState.Success(userPrefs)
             )
 
             // Update datastore
@@ -184,7 +184,7 @@ class DashboardViewModel @Inject constructor(
      */
     private fun setUserPrefLastWatchlistSelected(wlName: String) {
         // Set wlName as default in prefs
-        val prefs = (_uiState.value.userPrefs as DataState.Success).data
+        val prefs = (_uiState.value.userPrefs as DataResourceState.Success).data
         prefs.lastPopularWatchlistSelected = wlName
         updateUserPrefs(prefs)
         Log.d(tag, "UserPrefs lastPopularWatchlistSelected changed to: $wlName")
@@ -259,13 +259,13 @@ class DashboardViewModel @Inject constructor(
                 )
 
                 when (it) {
-                    is DataState.Success -> {
+                    is DataResourceState.Success -> {
                         Log.d(tag, "PopularWatchlist Success!")
                     }
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
                         Log.d(tag, "PopularWatchlist Loading!")
                     }
-                    is DataState.Error -> {
+                    is DataResourceState.Error -> {
                         Log.d(
                             tag, "PopularWatchlist Error! Msg: ${it.msg} " +
                                     "Exception: ${it.exception}"

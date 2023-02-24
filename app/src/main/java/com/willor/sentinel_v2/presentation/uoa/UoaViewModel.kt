@@ -8,7 +8,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.willor.lib_data.data.UoaPagingSource
 import com.willor.lib_data.data.local.prefs.UserPreferences
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.UoaFilterOptions
 import com.willor.lib_data.domain.usecases.UseCases
 import com.willor.sentinel_v2.presentation.uoa.uoa_components.UoaScreenEvent
@@ -77,7 +77,7 @@ class UoaViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.Default){
             // Wait for user prefs to be loaded
-            while(_uiState.value.userPrefs !is DataState.Success){
+            while(_uiState.value.userPrefs !is DataResourceState.Success){
                 Log.d(tag, "initializePager() Waiting for user prefs to load...")
                 delay(100L)
             }
@@ -93,8 +93,8 @@ class UoaViewModel @Inject constructor(
                         uoaPageProvider = { pageNum: Int ->      // This lambda provides Uoa Pages
                             usecases.getUoaUsecase(
                                 page = pageNum,
-                                sortAsc = (_uiState.value.userPrefs as DataState.Success).data.uoaSortAsc,
-                                sortBy = (_uiState.value.userPrefs as DataState.Success).data.uoaSortBy
+                                sortAsc = (_uiState.value.userPrefs as DataResourceState.Success).data.uoaSortAsc,
+                                sortBy = (_uiState.value.userPrefs as DataResourceState.Success).data.uoaSortBy
                             )
                         }
                     )
@@ -114,13 +114,13 @@ class UoaViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             usecases.getUserPreferencesUsecase().collectLatest {
                 when (it) {
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
                         Log.d(tag, "User Prefs Loading")
                     }
-                    is DataState.Error -> {
+                    is DataResourceState.Error -> {
                         Log.d(tag, "User Prefs Error")
                     }
-                    is DataState.Success -> {
+                    is DataResourceState.Success -> {
                         Log.d(tag, "User Prefs Successfully Loaded")
                         _uiState.update { state ->
                             state.copy(
@@ -148,12 +148,12 @@ class UoaViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             // Shouldn't happen but...Wait for user prefs to load
-            while(_uiState.value.userPrefs !is DataState.Success){
+            while(_uiState.value.userPrefs !is DataResourceState.Success){
                 delay(100L)
             }
 
             // Update user prefs
-            val prefs = (_uiState.value.userPrefs as DataState.Success)
+            val prefs = (_uiState.value.userPrefs as DataResourceState.Success)
             prefs.data.uoaSortAsc = sortAscNewValue
             saveUserPrefs(prefs.data)
 
@@ -167,12 +167,12 @@ class UoaViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO){
 
             // Shouldn't happen but...Wait for user prefs to load
-            while(_uiState.value.userPrefs !is DataState.Success){
+            while(_uiState.value.userPrefs !is DataResourceState.Success){
                 delay(100L)
             }
 
             // Update user prefs on file
-            val prefs = (_uiState.value.userPrefs as DataState.Success)
+            val prefs = (_uiState.value.userPrefs as DataResourceState.Success)
             prefs.data.uoaSortBy = sortByNewValue
             saveUserPrefs(prefs.data)
 //
@@ -190,14 +190,14 @@ class UoaViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO){
 
             // Verify that prefs are loaded
-            while (_uiState.value.userPrefs !is DataState.Success){
+            while (_uiState.value.userPrefs !is DataResourceState.Success){
                 delay(100L)
                 Log.d(tag, "removeTickerFromSentinelWatchlist() called and waiting for " +
                         "user prefs to load before removing $ticker")
             }
 
             // Remove ticker from watchlist if exists
-            val prefs = _uiState.value.userPrefs as DataState.Success
+            val prefs = _uiState.value.userPrefs as DataResourceState.Success
             val newList = prefs.data.sentinelWatchlist.toMutableList()
             if (!newList.contains(ticker)){
                 return@launch

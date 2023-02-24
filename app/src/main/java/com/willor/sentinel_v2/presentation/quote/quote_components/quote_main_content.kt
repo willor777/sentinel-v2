@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.willor.compose_value_range_bar.ValueRangeBar
 import com.willor.compose_value_range_bar.ValueRangeBarSettings
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp.EtfQuote
 import com.willor.lib_data.domain.dataobjs.responses.stock_quote_resp.StockQuote
 import com.willor.sentinel_v2.presentation.common.LabelValueRow
@@ -31,10 +31,10 @@ fun QuoteMainContent(
     val etfQuote = uiState.etfQuote
 
     when {
-        stockQuote is DataState.Success -> {
+        stockQuote is DataResourceState.Success -> {
             StockQuoteContent(stockQuote = stockQuote.data)
         }
-        etfQuote is DataState.Success -> {
+        etfQuote is DataResourceState.Success -> {
             EtfQuoteContent(etfQuote = etfQuote.data)
         }
         else -> {

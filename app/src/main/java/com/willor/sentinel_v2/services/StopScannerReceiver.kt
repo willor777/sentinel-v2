@@ -3,6 +3,7 @@ package com.willor.sentinel_v2.services
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 
 
 /*
@@ -12,7 +13,11 @@ TODO
     be called to stop the scanner and clear the notification.
  */
 class StopScannerReceiver: BroadcastReceiver() {
+
+    private val tag: String = StopScannerReceiver::class.java.simpleName
+
     override fun onReceive(context: Context?, intent: Intent?) {
-        TODO("Not yet implemented")
+        Log.d(tag, "onReceive() Called!")
+        context?.stopService(Intent(context, StockScannerService::class.java))
     }
 }

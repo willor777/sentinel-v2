@@ -1,7 +1,7 @@
 package com.willor.lib_data.domain.usecases
 
 import com.willor.lib_data.domain.Repo
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.PopularWatchlist
 import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.WatchlistData
 import kotlinx.coroutines.flow.Flow
@@ -12,16 +12,16 @@ class GetPopularWatchlistUsecase(
     private val repo: Repo
 ) {
 
-    suspend operator fun invoke(wlName: String): Flow<DataState<PopularWatchlist?>> =
+    suspend operator fun invoke(wlName: String): Flow<DataResourceState<PopularWatchlist?>> =
         repo.getPopularWatchlist(wlName).map {
             when (it) {
-                is DataState.Loading -> {
+                is DataResourceState.Loading -> {
                     it
                 }
-                is DataState.Error -> {
+                is DataResourceState.Error -> {
                     it
                 }
-                is DataState.Success -> {
+                is DataResourceState.Success -> {
                     // Sort the tickers list
                     val tickerList = it.data!!.watchlistData.tickers.sortedWith { o1, o2 ->
                         val absOne = abs(o1!!.changePercent)
@@ -41,7 +41,7 @@ class GetPopularWatchlistUsecase(
                     }.reversed()
 
                     // make a new object with sorted list
-                    DataState.Success(
+                    DataResourceState.Success(
                         data = PopularWatchlist(
                             lastUpdated = it.data.lastUpdated,
                             watchlistData = WatchlistData(

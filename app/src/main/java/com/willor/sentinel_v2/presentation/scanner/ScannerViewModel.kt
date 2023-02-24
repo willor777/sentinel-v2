@@ -3,7 +3,7 @@ package com.willor.sentinel_v2.presentation.scanner
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.usecases.UseCases
 import com.willor.sentinel_v2.presentation.scanner.scanner_components.ScannerEvent
 import com.willor.sentinel_v2.presentation.scanner.scanner_components.ScannerUiState
@@ -49,6 +49,9 @@ class ScannerViewModel @Inject constructor(
                 // Todo
                 //  - Load quote so that current data can be compared to "time of trigger"
             }
+            is ScannerEvent.StartScannerClicked -> {
+
+            }
         }
     }
 
@@ -59,7 +62,7 @@ class ScannerViewModel @Inject constructor(
                 when (it) {
 
                     // Update _uiState UserPreferences
-                    is DataState.Success -> {
+                    is DataResourceState.Success -> {
                         _uiState.update { state ->
                             state.copy(
                                 userPrefs = it
@@ -69,10 +72,10 @@ class ScannerViewModel @Inject constructor(
                     }
 
                     // Log the collections
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
                         Log.d(tag, "User Prefs Flow Collection Triggered! Currently Loading")
                     }
-                    is DataState.Error -> {
+                    is DataResourceState.Error -> {
                         Log.d(tag, "User Prefs Flow Collection Triggered! Error Loading")
                     }
                 }
@@ -113,7 +116,7 @@ class ScannerViewModel @Inject constructor(
             // Attempt stock quote first
             useCases.getStockQuoteUsecase(ticker).collectLatest {
                 when (it) {
-                    is DataState.Success -> {
+                    is DataResourceState.Success -> {
 
                         // Set the success flag so that no EtfQuote is requested
                         quoteSuccess = true
@@ -129,10 +132,10 @@ class ScannerViewModel @Inject constructor(
                             )
                         }
                     }
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
                         Log.d(tag, "StockQuote Loading for: $ticker")
                     }
-                    is DataState.Error -> {
+                    is DataResourceState.Error -> {
                         Log.d(tag, "StockQuote Error for: $ticker...Attempting ETF Quote")
                     }
                 }

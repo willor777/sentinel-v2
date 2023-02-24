@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.PopularWatchlist
 import com.willor.lib_data.domain.dataobjs.responses.popular_wl_resp.Ticker
 import com.willor.sentinel_v2.presentation.common.DropdownOptionSelector
@@ -57,13 +57,13 @@ fun DashPopularWl(
     val selectedWlState = dashboardUiState.popularWatchlistDisplayed
 
     when (wlOptionsState) {
-        is DataState.Success -> {
+        is DataResourceState.Success -> {
             wlOptionsLoaded = wlOptionsState.data!!.data
         }
     }
 
     when (selectedWlState) {
-        is DataState.Success -> {
+        is DataResourceState.Success -> {
             curWatchlistLoaded = selectedWlState.data!!
         }
     }

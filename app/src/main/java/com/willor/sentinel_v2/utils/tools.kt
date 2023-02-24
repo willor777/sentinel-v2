@@ -27,6 +27,10 @@ fun formatChangeDollarAndChangePct(
 
 
 fun formatDoubleToTwoDecimalPlaceString(d: Double): String{
+    if (d.isInfinite()){
+        return "0.00"
+    }
+
     val strDouble = d.toString().split(".")
 
     val whole = strDouble[0]
@@ -86,6 +90,9 @@ fun determineGainLossColor(d: Double): Color {
 
 
 fun calculateRatio(curValue: Double, avgValue: Double): Double{
+    if (avgValue == 0.0){
+        return curValue
+    }
     return curValue / avgValue
 }
 

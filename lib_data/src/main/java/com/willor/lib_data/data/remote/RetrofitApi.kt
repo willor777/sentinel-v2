@@ -30,8 +30,3 @@ object RetrofitApi {
 
 
 }
-
-
-fun main() {
-
-}

@@ -7,11 +7,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.responses.stock_snr_levels_resp.StockSnrLevels
 import com.willor.sentinel_v2.presentation.common.LabelValueRow
 import com.willor.sentinel_v2.ui.theme.MySizes
@@ -33,7 +31,7 @@ fun QuoteSnrLevels(
     val snrLevels = uiState.snrLevels
 
     when (snrLevels) {
-        is DataState.Success -> {
+        is DataResourceState.Success -> {
             SnrLevelsContent(snrLevels = snrLevels.data!!, uiState.currentTicker)
         }
     }

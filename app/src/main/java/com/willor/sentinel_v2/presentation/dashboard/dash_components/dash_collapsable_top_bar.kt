@@ -1,6 +1,5 @@
 package com.willor.sentinel_v2.presentation.dashboard.dash_components
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,15 +12,12 @@ import androidx.compose.material.icons.filled.MenuOpen
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.sentinel_v2.presentation.common.TickerCardLazyRow
 import com.willor.sentinel_v2.ui.theme.MySizes
 
@@ -158,7 +154,7 @@ private fun CollapsedBarContent(
     val indexData = dashUiStateProvider().majorIndices
 
     when (indexData){
-        is DataState.Success -> {
+        is DataResourceState.Success -> {
             val tickList = mutableListOf<String>()
             val gdList = mutableListOf<Double>()
             val gpList = mutableListOf<Double>()
@@ -201,7 +197,7 @@ private fun ExpandedBarContent(
     val futuresData = dashUiStateProvider().majorFutures
     val indexData = dashUiStateProvider().majorIndices
     when (futuresData){
-        is DataState.Success -> {
+        is DataResourceState.Success -> {
 
             val tickList = mutableListOf<String>()
             val gdList = mutableListOf<Double>()
@@ -242,7 +238,7 @@ private fun ExpandedBarContent(
 
     when (indexData){
 
-        is DataState.Success -> {
+        is DataResourceState.Success -> {
 
             val tickList = mutableListOf<String>()
             val gdList = mutableListOf<Double>()

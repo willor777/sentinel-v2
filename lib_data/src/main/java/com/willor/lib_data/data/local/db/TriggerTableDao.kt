@@ -17,6 +17,9 @@ interface TriggerTableDao {
     suspend fun insertTrigger(triggerEntity: TriggerEntity)
 
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllTriggers(vararg triggerEntity: TriggerEntity)
+
     @Delete
     suspend fun deleteTrigger(triggerEntity: TriggerEntity)
     

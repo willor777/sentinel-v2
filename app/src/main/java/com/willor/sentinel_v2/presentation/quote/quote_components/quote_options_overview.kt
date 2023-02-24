@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.willor.compose_value_range_bar.ValueRangeBar
 import com.willor.compose_value_range_bar.ValueRangeBarSettings
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.responses.options_overview_resp.OptionsOverview
 import com.willor.sentinel_v2.presentation.common.LabelValueRow
 import com.willor.sentinel_v2.ui.theme.GainGreen
@@ -32,7 +32,7 @@ fun QuoteOptionsOverview(
     val optionsOverview = quoteUiStateProvider().optionsOverview
 
     when(optionsOverview){
-        is DataState.Success -> {
+        is DataResourceState.Success -> {
             OptionsOverviewContent(optionsOverview.data)
         }
         else -> {

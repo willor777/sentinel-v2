@@ -1,17 +1,21 @@
 package com.willor.sentinel_v2.presentation.scanner
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.willor.sentinel_v2.presentation.common.*
 import com.willor.sentinel_v2.presentation.scanner.scanner_components.ScannerEvent
 import com.willor.sentinel_v2.presentation.scanner.scanner_components.ScannerUiState
+import com.willor.sentinel_v2.presentation.scanner.scanner_components.StartScanner
 import com.willor.sentinel_v2.presentation.scanner.scanner_components.TriggersList
 import com.willor.sentinel_v2.presentation.uoa.uoa_components.BasicTopBar
+import com.willor.sentinel_v2.services.StockScannerService
 import com.willor.sentinel_v2.ui.theme.MySizes
 
 
@@ -40,6 +44,7 @@ fun ScannerScreen(
     }
 
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
 
     ScannerScreenContent(
@@ -53,6 +58,11 @@ fun ScannerScreen(
         },
         watchlistCardClicked = {
             // TODO
+        },
+        startScannerClicked = {
+            Intent(context, StockScannerService::class.java).also { intent ->
+                context.startForegroundService(intent)
+            }
         }
     )
 }
@@ -66,6 +76,7 @@ private fun ScannerScreenContent(
     navDrawerDestinationClicked: (Screens) -> Unit,
     removeFromWatchlistClicked: (ticker: String) -> Unit,
     watchlistCardClicked: (ticker: String) -> Unit,
+    startScannerClicked: () -> Unit,
 ){
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -112,6 +123,15 @@ private fun ScannerScreenContent(
                 .padding(horizontal = MySizes.HORIZONTAL_EDGE_PADDING),
             verticalArrangement = Arrangement.SpaceBetween
         ){                                                              // Main Column
+
+            /* Big Start Scanner Button
+            - Idea for this is that it is sort of interactive...
+            - Meaning that when the user clicks it, Some feedback like a circular line
+             going around the button really fast
+            - Then when the scanner does it's first scan, make the line really bright
+             and solid showing that the scanner is Definitely running
+             */
+            StartScanner(startScannerClicked)
 
             TriggersList(uiStateProvider)
 

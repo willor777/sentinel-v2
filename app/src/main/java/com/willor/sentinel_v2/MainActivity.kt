@@ -1,5 +1,11 @@
 package com.willor.sentinel_v2
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,7 +39,12 @@ class MainActivity : ComponentActivity() {
     }
 
 
+
+
+
+
     companion object{
+        const val SCANNER_NOTIFICATION_CHANNEL_NAME = ""
         val lottieLoadingJsonId = R.raw.loading_circle_anim
         val lottieErrorJsonId = R.raw.error_page_anim
     }

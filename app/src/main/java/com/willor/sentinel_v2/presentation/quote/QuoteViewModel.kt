@@ -4,14 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.willor.lib_data.data.local.prefs.UserPreferences
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.usecases.UseCases
 import com.willor.lib_data.utils.TickerSymbolLoader
 import com.willor.sentinel_v2.presentation.quote.quote_components.QuoteUiEvent
 import com.willor.sentinel_v2.presentation.quote.quote_components.QuoteUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -96,7 +95,7 @@ class QuoteViewModel @Inject constructor(
 
             usecases.getSnrLevelsUsecase(ticker).collect {
                 when(it){
-                    is DataState.Success ->{
+                    is DataResourceState.Success ->{
                         _uiState.update { uiState ->
                             uiState.copy(
                                 snrLevels = it
@@ -104,7 +103,7 @@ class QuoteViewModel @Inject constructor(
                         }
                     }
 
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
                         Log.d(tag, "Snr Levels Loading For $ticker")
                     }
 
@@ -123,7 +122,7 @@ class QuoteViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO){
             usecases.getStockCompetitorsUsecase(ticker).collectLatest {
                 when(it){
-                    is DataState.Success -> {
+                    is DataResourceState.Success -> {
                         _uiState.update { state ->
                             state.copy(
                                 competitors = it
@@ -132,7 +131,7 @@ class QuoteViewModel @Inject constructor(
                         Log.d(tag, "Competitors Loaded Successfully For $ticker")
                     }
 
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
                         Log.d(tag, "Competitors Loading For $ticker")
                     }
 
@@ -171,8 +170,8 @@ class QuoteViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO){
 
             // Verify that user prefs have been loaded
-            if (_uiState.value.userPrefs is DataState.Success){
-                val curPrefs = _uiState.value.userPrefs as DataState.Success
+            if (_uiState.value.userPrefs is DataResourceState.Success){
+                val curPrefs = _uiState.value.userPrefs as DataResourceState.Success
                 val curList = curPrefs.data.sentinelWatchlist
                 if (curList.contains(ticker)){
                     Log.d(tag, "Sentinel Watchlist already contains $ticker, Nothing added")
@@ -191,8 +190,8 @@ class QuoteViewModel @Inject constructor(
 
     private fun removeTickerFromSentinelWatchlist(ticker: String){
         viewModelScope.launch(Dispatchers.IO){
-            if (_uiState.value.userPrefs is DataState.Success){
-                val curPrefs = _uiState.value.userPrefs as DataState.Success
+            if (_uiState.value.userPrefs is DataResourceState.Success){
+                val curPrefs = _uiState.value.userPrefs as DataResourceState.Success
                 val curList = curPrefs.data.sentinelWatchlist
                 if (!curList.contains(ticker)){
                     Log.d(tag, "Sentinel Watchlist does not contain $ticker, Nothing changed")
@@ -250,15 +249,15 @@ class QuoteViewModel @Inject constructor(
             // attempt to retreive a stock quote first
             usecases.getStockQuoteUsecase(ticker).collectLatest {
                 when (it) {
-                    is DataState.Success -> {
+                    is DataResourceState.Success -> {
                         _uiState.value = _uiState.value.copy(
                             stockQuote = it
                         )
                     }
-                    is DataState.Error -> {
+                    is DataResourceState.Error -> {
                         getEtfQuote = true
                     }
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
 
                     }
                 }
@@ -268,15 +267,15 @@ class QuoteViewModel @Inject constructor(
             if (getEtfQuote) {
                 usecases.getEtfQuoteUsecase(ticker).collectLatest {
                     when (it) {
-                        is DataState.Success -> {
+                        is DataResourceState.Success -> {
                             _uiState.value = _uiState.value.copy(
                                 etfQuote = it
                             )
                         }
-                        is DataState.Loading -> {
+                        is DataResourceState.Loading -> {
 
                         }
-                        is DataState.Error -> {
+                        is DataResourceState.Error -> {
 
                         }
                     }
@@ -293,17 +292,17 @@ class QuoteViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             usecases.getStockQuoteUsecase(ticker).collectLatest {
                 when (it) {
-                    is DataState.Success -> {
+                    is DataResourceState.Success -> {
                         _uiState.value = _uiState.value.copy(
                             stockQuote = it
                         )
                         Log.d(tag, "StockQuote Loaded Successfully: $ticker")
                         curQuoteType = QuoteType.STOCK_QUOTE
                     }
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
                         Log.d(tag, "StockQuote Loading in Progress: $ticker")
                     }
-                    is DataState.Error -> {
+                    is DataResourceState.Error -> {
                         Log.d(tag, "StockQuote Loading Failed for: $ticker\n" +
                                 "Error Message: ${it.msg}\nException: ${it.exception}")
                     }
@@ -319,17 +318,17 @@ class QuoteViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             usecases.getEtfQuoteUsecase(ticker).collectLatest {
                 when (it) {
-                    is DataState.Success -> {
+                    is DataResourceState.Success -> {
                         _uiState.value = _uiState.value.copy(
                             etfQuote = it
                         )
                         Log.d(tag, "EtfQuote Loaded Successfully: $ticker")
                         curQuoteType = QuoteType.ETF_QUOTE
                     }
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
                         Log.d(tag, "EtfQuote Loading in Progress: $ticker")
                     }
-                    is DataState.Error -> {
+                    is DataResourceState.Error -> {
                         Log.d(tag, "EtfQuote Loading Failed for: $ticker\n" +
                                 "Error Message: ${it.msg}\nException: ${it.exception}")
                     }
@@ -345,7 +344,7 @@ class QuoteViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             usecases.getOptionsOverviewUsecase(ticker).collectLatest {
                 when (it) {
-                    is DataState.Success -> {
+                    is DataResourceState.Success -> {
                         _uiState.update { state ->
                             state.copy(
                                 optionsOverview = it
@@ -354,10 +353,10 @@ class QuoteViewModel @Inject constructor(
 
                         Log.d(tag, "OptionsOverview Loaded Successfully: $ticker")
                     }
-                    is DataState.Loading -> {
+                    is DataResourceState.Loading -> {
                         Log.d(tag, "OptionsOverview Loading in Progress: $ticker")
                     }
-                    is DataState.Error -> {
+                    is DataResourceState.Error -> {
                         Log.d(tag, "OptionsOverview Loading Failed for: $ticker\n" +
                                 "Error Message: ${it.msg}\nException: ${it.exception}")
                     }
@@ -376,11 +375,11 @@ class QuoteViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(
             currentTicker = ticker,
             currentSearchResults = listOf(),
-            stockQuote = DataState.Loading(),
-            etfQuote = DataState.Loading(),
-            optionsOverview = DataState.Loading(),
-            competitors = DataState.Loading(),
-            snrLevels = DataState.Loading()
+            stockQuote = DataResourceState.Loading(),
+            etfQuote = DataResourceState.Loading(),
+            optionsOverview = DataResourceState.Loading(),
+            competitors = DataResourceState.Loading(),
+            snrLevels = DataResourceState.Loading()
         )
 
         // Reset the quote type

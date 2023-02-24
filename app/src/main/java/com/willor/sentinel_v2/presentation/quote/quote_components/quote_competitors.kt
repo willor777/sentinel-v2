@@ -1,20 +1,16 @@
 package com.willor.sentinel_v2.presentation.quote.quote_components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.willor.lib_data.domain.dataobjs.DataState
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.responses.stock_competitors_resp.Competitor
 import com.willor.lib_data.domain.dataobjs.responses.stock_competitors_resp.StockCompetitors
 import com.willor.sentinel_v2.presentation.common.LabelValueRow
@@ -33,7 +29,7 @@ fun QuoteCompetitors(
     val competitors = uiState.competitors
     val curTicker = uiState.currentTicker
     when(competitors){
-        is DataState.Success -> {
+        is DataResourceState.Success -> {
             CompetitorsContent(
                 curTicker = curTicker,
                 competitors = competitors.data,

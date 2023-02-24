@@ -123,25 +123,7 @@ private fun ExpandedContent(
             }
         }
 
-        // Percent Gain %
-        LabelValueRow(
-            label = "% Gain at time of Trigger:",
-            value = "${formatDoubleToTwoDecimalPlaceString(trigger.pctGainAtTime)}%"
-        )
 
-
-        // Dollar Gain $
-        LabelValueRow(
-            label = "$ Gain at time of Trigger:",
-            value = "$${formatDoubleToTwoDecimalPlaceString(trigger.dollarGainAtTime)}"
-        )
-
-
-        // Vol/Avg. Vol Ratio
-        LabelValueRow(
-            label = "Vol/Avg. Vol at time of Trigger:",
-            value = "$${formatDoubleToTwoDecimalPlaceString(trigger.curVolAvgVolRatio)}"
-        )
 
 
     }

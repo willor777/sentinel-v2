@@ -158,14 +158,14 @@ private fun HeaderRow(
             text = displayType,
             style = MaterialTheme.typography.titleSmall,
             color = Color.White,
-            modifier = Modifier.width(35.dp)
+            modifier = Modifier.width(30.dp)
         )
 
         Text(
             text = trimDecimal(strike),
             style = MaterialTheme.typography.titleSmall,
             color = Color.White,
-            modifier = Modifier.width(70.dp),
+            modifier = Modifier.width(50.dp),
             textAlign = TextAlign.End
         )
 

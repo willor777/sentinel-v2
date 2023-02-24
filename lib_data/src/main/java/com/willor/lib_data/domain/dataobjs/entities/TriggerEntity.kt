@@ -12,11 +12,22 @@ data class TriggerEntity(
     @ColumnInfo val triggerAnalysisName: String,
     @ColumnInfo val triggerAnalysisDesc: String,
     @ColumnInfo val triggerValue: Int,
+    @ColumnInfo val triggerStrengthPercentage: Double,
+    @ColumnInfo val suggestedStop: Double,
+    @ColumnInfo val suggestedTakeProfit: Double,
+    @ColumnInfo val shouldCloseLong: Boolean,
+    @ColumnInfo val shouldCloseShort: Boolean,
     @ColumnInfo val stockPriceAtTime: Double,
-    @ColumnInfo val pctGainAtTime: Double,
-    @ColumnInfo val dollarGainAtTime: Double,
     @ColumnInfo val timestamp: Long,
-    @ColumnInfo val curVolAvgVolRatio: Double,
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
 
     )
+
+
+//val triggerStrengthPercentage: Double,
+//val suggestedStop: Double,
+//val suggestedTakeProfit: Double,
+//val shouldCloseLongPositions: Boolean,
+//val shouldCloseShortPositions: Boolean,
+//val timestamp: Long
+//)
