@@ -1,5 +1,6 @@
 package com.willor.lib_data.data.remote
 
+import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -19,6 +20,15 @@ object RetrofitApi {
                 .connectTimeout(10000, TimeUnit.MILLISECONDS)
                 .callTimeout(20000, TimeUnit.MILLISECONDS)
                 .followRedirects(true)
+                .connectionSpecs(
+                    listOf(
+
+                        // Secure Connection for User's Credentials
+                        // Added 04-21-2023
+                        ConnectionSpec.MODERN_TLS
+
+                    )
+                )
                 .build()
         )
         .baseUrl(BASE_URL)

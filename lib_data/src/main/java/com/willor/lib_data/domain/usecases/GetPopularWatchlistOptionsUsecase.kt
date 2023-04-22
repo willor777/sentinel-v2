@@ -9,7 +9,7 @@ class GetPopularWatchlistOptionsUsecase(
     private val repo: Repo
 ) {
 
-    suspend operator fun invoke(): Flow<DataResourceState<PopularWatchlistOptions?>> =
+    operator fun invoke(): Flow<DataResourceState<PopularWatchlistOptions?>> =
         repo.getAllAvailablePopularWatchlistOptions()
 
 }

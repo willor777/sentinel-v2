@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class GetMajorFuturesUsecase(
     private val repo: Repo
 ) {
-    suspend operator fun invoke(): Flow<DataResourceState<MajorFutures?>> {
+    operator fun invoke(): Flow<DataResourceState<MajorFutures?>> {
         return repo.getMajorFutures()
     }
 }

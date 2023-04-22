@@ -9,7 +9,7 @@ class GetEtfQuoteUsecase(
     private val repo: Repo
 ) {
 
-    suspend operator fun invoke(ticker: String): Flow<DataResourceState<EtfQuote?>> {
+    operator fun invoke(ticker: String): Flow<DataResourceState<EtfQuote?>> {
         return repo.getEtfQuote(ticker)
     }
 }

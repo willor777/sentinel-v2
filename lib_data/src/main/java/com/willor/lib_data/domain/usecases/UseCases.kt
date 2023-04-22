@@ -13,5 +13,7 @@ class UseCases(
     val getStockCompetitorsUsecase: GetStockCompetitorsUsecase,
     val getSnrLevelsUsecase: GetSnrLevelsUsecase,
     val getUoaUsecase: GetUoaUsecase,
-    val getTriggersUsecase: GetTriggersUsecase
+    val getTriggersUsecase: GetTriggersUsecase,
+    val loginUsecase: LoginUsecase,
+    val registerUsecase: RegisterUsecase
 )

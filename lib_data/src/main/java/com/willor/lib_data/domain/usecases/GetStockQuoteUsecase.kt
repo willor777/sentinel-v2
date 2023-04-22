@@ -9,7 +9,7 @@ class GetStockQuoteUsecase(
     private val repo: Repo
 ) {
 
-    suspend operator fun invoke(ticker: String): Flow<DataResourceState<StockQuote?>> {
+    operator fun invoke(ticker: String): Flow<DataResourceState<StockQuote?>> {
         return repo.getStockQuote(ticker)
     }
 }

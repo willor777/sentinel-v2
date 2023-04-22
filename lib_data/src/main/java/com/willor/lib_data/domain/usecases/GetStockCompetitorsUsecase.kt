@@ -9,6 +9,6 @@ class GetStockCompetitorsUsecase(
     val repo: Repo
 ) {
 
-    suspend operator fun invoke(ticker: String): Flow<DataResourceState<StockCompetitors?>> =
+    operator fun invoke(ticker: String): Flow<DataResourceState<StockCompetitors?>> =
         repo.getStockCompetitors(ticker)
 }

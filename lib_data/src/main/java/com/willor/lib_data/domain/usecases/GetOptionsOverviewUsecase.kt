@@ -9,7 +9,7 @@ class GetOptionsOverviewUsecase(
     private val repo: Repo
 ) {
 
-    suspend operator fun invoke(ticker: String): Flow<DataResourceState<OptionsOverview?>> {
+    operator fun invoke(ticker: String): Flow<DataResourceState<OptionsOverview?>> {
         return repo.getOptionsOverview(ticker)
     }
 }

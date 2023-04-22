@@ -4,6 +4,8 @@ import com.willor.lib_data.data.local.prefs.UserPreferences
 import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.UoaFilterOptions
 import com.willor.lib_data.domain.dataobjs.entities.TriggerEntity
+import com.willor.lib_data.domain.dataobjs.responses.authentication_resp.LoginResponse
+import com.willor.lib_data.domain.dataobjs.responses.authentication_resp.RegistrationResponse
 import com.willor.lib_data.domain.dataobjs.responses.chart_resp.StockChart
 import com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp.EtfQuote
 import com.willor.lib_data.domain.dataobjs.responses.major_futures_resp.MajorFutures
@@ -19,6 +21,10 @@ import com.willor.lib_data.domain.dataobjs.responses.uoa_page_resp.UoaPage
 import kotlinx.coroutines.flow.Flow
 
 interface Repo {
+
+    fun registerNewUser(email: String, password: String): Flow<DataResourceState<RegistrationResponse>>
+
+    fun loginUser(email: String, password: String): Flow<DataResourceState<LoginResponse>>
 
     fun getStockChart(
         ticker: String, interval: String, periodRange: String, prepost: Boolean

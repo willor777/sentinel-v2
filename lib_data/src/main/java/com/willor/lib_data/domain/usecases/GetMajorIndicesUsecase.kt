@@ -9,7 +9,7 @@ class GetMajorIndicesUsecase(
     private val repo: Repo
 ) {
 
-    suspend operator fun invoke(): Flow<DataResourceState<MajorIndices?>> {
+    operator fun invoke(): Flow<DataResourceState<MajorIndices?>> {
         return repo.getMajorIndices()
     }
 }

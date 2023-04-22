@@ -77,6 +77,16 @@ object DiUseCases {
     }
 
     @Provides
+    fun provideRegisterUseCase(repo: Repo): RegisterUsecase {
+        return RegisterUsecase(repo)
+    }
+
+    @Provides
+    fun provideLoginUsecase(repo: Repo): LoginUsecase {
+        return LoginUsecase(repo)
+    }
+
+    @Provides
     fun provideUsecases(
         majorFutures: GetMajorFuturesUsecase,
         majorIndices: GetMajorIndicesUsecase,
@@ -90,11 +100,14 @@ object DiUseCases {
         competitors: GetStockCompetitorsUsecase,
         snrLevels: GetSnrLevelsUsecase,
         uoaUsecase: GetUoaUsecase,
-        triggersUsecase: GetTriggersUsecase
+        triggersUsecase: GetTriggersUsecase,
+        registerUsecase: RegisterUsecase,
+        loginUsecase: LoginUsecase
     ): UseCases{
         return UseCases(
             userPrefs, saveUserPrefs, majorFutures, majorIndices, popWlOptions, popWl,
             stockQuote, etfQuote, options, competitors, snrLevels, uoaUsecase, triggersUsecase,
+            loginUsecase, registerUsecase
         )
     }
 }

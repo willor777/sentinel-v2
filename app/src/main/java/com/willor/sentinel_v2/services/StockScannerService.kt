@@ -14,22 +14,15 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.*
-import com.willor.lib_data.data.local.prefs.UserPreferences
 import com.willor.lib_data.domain.Repo
-import com.willor.lib_data.domain.dataobjs.DataResourceState
-import com.willor.lib_data.domain.dataobjs.entities.TriggerEntity
 import com.willor.sentinel_v2.R
-import com.willor.sentinel_v2.utils.MarketTimeHelper
-import com.willor.stock_analysis_lib.analysis.Strategy
-import com.willor.stock_analysis_lib.analysis.StrategyName
-import com.willor.stock_analysis_lib.analysis.TestStrategy
-import com.willor.stock_analysis_lib.charts.StockChart
-import com.willor.stock_analysis_lib.common.CandleInterval
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 import javax.inject.Inject
+
+
+// TODO Scanner should only thow a trigger once every 4 hours or so...Don't annoy user!!!
 
 /**
  * Scanner that analyzes stock charts periodically according to specified interval.
@@ -130,6 +123,9 @@ class StockScannerService : Service() {
 
     private fun startScanner() {
         coroutineScope.launch {
+
+
+
         }
     }
 
@@ -144,185 +140,185 @@ class StockScannerService : Service() {
      * Notes * * * * *
      * - Remember to only fetch charts after full candle has been formed (This improves efficiency)
      */
-    private inner class Scanner {
-
-        private var curInterval: CandleInterval? = null
-        private var curWatchlist: List<String>? = null
-        private var curStrategy: Strategy? = null
-        private var scannerJob: Job? = null
-
-        init {
-            collectUserPrefsFlow()
-        }
-
-
-        /**
-         * Collects UserPrefs from DataStore flow.
-         */
-        fun collectUserPrefsFlow() {
-            coroutineScope.launch(Dispatchers.IO) {
-                repo.getUserPreferences().collectLatest {
-                    when (it) {
-                        is DataResourceState.Success -> {
-                            if (
-                                it.data.scannerChartInterval != curInterval ||
-                                it.data.sentinelWatchlist != curWatchlist ||
-                                it.data.scannerStrategy != curStrategy!!.strategyName
-                            ) {
-                                curInterval = it.data.scannerChartInterval
-                                curWatchlist = it.data.sentinelWatchlist
-                                curStrategy = determineStrategy(it.data)
-                                scannerJob?.cancel()
-                                startScanner()
-                            }
-                        }
-                        else -> {
-                            // Not needed
-                        }
-                    }
-                }
-            }
-        }
-
-
-        fun startScanner() {
-            scannerJob = coroutineScope.launch(Dispatchers.Default) {
-
-                // Make sure all required settings are present, if not, return
-                if (curWatchlist.isNullOrEmpty() || curInterval == null || curStrategy == null) {
-                    return@launch
-                }
-
-
-            }
-        }
-
-        private fun determineStrategy(userPrefs: UserPreferences): Strategy {
-            return when (userPrefs.scannerStrategy) {
-                StrategyName.TEST_STRATEGY -> {
-                    TestStrategy()
-                }
-                else -> {
-                    TestStrategy()
-                }
-            }
-        }
-
-        private suspend fun scan(scanTime: Long) {
-
-            // Determine next candle formation time
-            val curTime = System.currentTimeMillis()
-            val nextFullCandle = MarketTimeHelper
-                .findNextCandleFormationTime(curTime, curInterval!!)
-
-            // Wait
-            delay(nextFullCandle.time - curTime)
-
-            // Scan each ticker in watchlist using specified strategy
-            val tickerChartPairs = collectAllCharts()
-
-            // Loop through charts and build list of triggers
-            val validTriggers = mutableListOf<TriggerEntity>()
-            for ((sym, c) in tickerChartPairs){
-
-                // Verify chart
-                if (c == null){
-                    continue
-                }
-
-                // Collect analysis for chart, if trigger found, add to validTriggers list
-                val analysis = curStrategy!!.analyzeChart(c)
-                if (analysis.trigger != 0){
-                    validTriggers.add(
-                        TriggerEntity(
-                            ticker = analysis.ticker,
-                            triggerAnalysisName = analysis.strategyDisplayName,
-                            triggerAnalysisDesc = analysis.strategyDescription,
-                            triggerValue = analysis.trigger,
-                            triggerStrengthPercentage = analysis.triggerStrengthPercentage,
-                            suggestedStop = analysis.suggestedStop,
-                            suggestedTakeProfit = analysis.suggestedTakeProfit,
-                            shouldCloseLong = analysis.shouldCloseLongPositions,
-                            shouldCloseShort = analysis.shouldCloseShortPositions,
-                            stockPriceAtTime = analysis.stockPriceAtTime,
-                            timestamp = analysis.timestamp
-                        )
-                    )
-                }
-            }
-            
-            repo.saveTriggers(*validTriggers.toTypedArray())
-        }
-
-
-        private suspend fun collectAllCharts(): List<Pair<String, StockChart?>> {
-
-            // List of deferred Pair<ticker, chart> (Collected asynchronously)
-            val charts: MutableList<Deferred<Pair<String, StockChart?>>> = mutableListOf()
-
-            // Loop through tickers and add deferred Pair<ticker, chart> to list
-            curWatchlist?.forEach { t ->
-                charts.add(
-                    coroutineScope.async(Dispatchers.IO){
-                        // Pair<String: Ticker, StockChart?: ChartForTicker>
-                        t to collectChartForTicker(t)
-                    }
-                )
-            }
-
-            return charts.awaitAll()
-        }
-
-
-        private suspend fun collectChartForTicker(t: String): StockChart? {
-
-            // Non nullability is guaranteed  by calling function
-
-            var chart: StockChart? = null
-            repo.getStockChart(
-                ticker = t,
-                interval = curInterval!!.serverCode,
-                periodRange = curStrategy!!.requiredPeriodRange,
-                prepost = curStrategy!!.requiredPrepost
-            ).collectLatest {
-                when (it) {
-                    is DataResourceState.Success -> {
-                        Log.d(tag, "Collected chart for ticker: $t")
-
-                        chart = StockChart(
-                            ticker = it.data!!.data.ticker,
-                            interval = curInterval!!,
-                            periodRange = it.data!!.data.periodRange,
-                            prepost = it.data!!.data.prepost,
-                            datetime = it.data!!.data.timestamp.map { ts ->
-
-                                // Timestamps are in seconds
-                                Date(ts * 1000L)
-                            },
-                            timestamp = it.data!!.data.timestamp,
-                            open = it.data!!.data.open,
-                            high = it.data!!.data.high,
-                            low = it.data!!.data.low,
-                            close = it.data!!.data.close,
-                            volume = it.data!!.data.volume
-                        )
-                        return@collectLatest
-                    }
-                    is DataResourceState.Error -> {
-                        Log.d(tag, "Failed to collect chart for ticker: $t")
-                        return@collectLatest
-                    }
-                    is DataResourceState.Loading -> {
-                        Log.d(tag, "Loading chart for ticker: $t")
-                    }
-                }
-            }
-
-            return chart
-        }
-
-
-    }
+//    private inner class Scanner {
+//
+//        private var curInterval: CandleInterval? = null
+//        private var curWatchlist: List<String>? = null
+//        private var curStrategy: Strategy? = null
+//        private var scannerJob: Job? = null
+//
+//        init {
+//            collectUserPrefsFlow()
+//        }
+//
+//
+//        /**
+//         * Collects UserPrefs from DataStore flow.
+//         */
+//        fun collectUserPrefsFlow() {
+//            coroutineScope.launch(Dispatchers.IO) {
+//                repo.getUserPreferences().collectLatest {
+//                    when (it) {
+//                        is DataResourceState.Success -> {
+//                            if (
+//                                it.data.scannerChartInterval != curInterval ||
+//                                it.data.sentinelWatchlist != curWatchlist ||
+//                                it.data.scannerStrategy != curStrategy!!.strategyName
+//                            ) {
+//                                curInterval = it.data.scannerChartInterval
+//                                curWatchlist = it.data.sentinelWatchlist
+//                                curStrategy = determineStrategy(it.data)
+//                                scannerJob?.cancel()
+//                                startScanner()
+//                            }
+//                        }
+//                        else -> {
+//                            // Not needed
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//        fun startScanner() {
+//            scannerJob = coroutineScope.launch(Dispatchers.Default) {
+//
+//                // Make sure all required settings are present, if not, return
+//                if (curWatchlist.isNullOrEmpty() || curInterval == null || curStrategy == null) {
+//                    return@launch
+//                }
+//
+//
+//            }
+//        }
+//
+//        private fun determineStrategy(userPrefs: UserPreferences): Strategy {
+//            return when (userPrefs.scannerStrategy) {
+//                StrategyName.TEST_STRATEGY -> {
+//                    TestStrategy()
+//                }
+//                else -> {
+//                    TestStrategy()
+//                }
+//            }
+//        }
+//
+//        private suspend fun scan(scanTime: Long) {
+//
+//            // Determine next candle formation time
+//            val curTime = System.currentTimeMillis()
+//            val nextFullCandle = MarketTimeHelper
+//                .findNextCandleFormationTime(curTime, curInterval!!)
+//
+//            // Wait
+//            delay(nextFullCandle.time - curTime)
+//
+//            // Scan each ticker in watchlist using specified strategy
+//            val tickerChartPairs = collectAllCharts()
+//
+//            // Loop through charts and build list of triggers
+//            val validTriggers = mutableListOf<TriggerEntity>()
+//            for ((sym, c) in tickerChartPairs){
+//
+//                // Verify chart
+//                if (c == null){
+//                    continue
+//                }
+//
+//                // Collect analysis for chart, if trigger found, add to validTriggers list
+//                val analysis = curStrategy!!.analyzeChart(c)
+//                if (analysis.trigger != 0){
+//                    validTriggers.add(
+//                        TriggerEntity(
+//                            ticker = analysis.ticker,
+//                            strategyName = analysis.strategyDisplayName,
+//                            strategyDescription = analysis.strategyDescription,
+//                            triggerValue = analysis.trigger,
+//                            triggerStrengthPercentage = analysis.triggerStrengthPercentage,
+//                            suggestedStop = analysis.suggestedStop,
+//                            suggestedTakeProfit = analysis.suggestedTakeProfit,
+//                            shouldCloseLong = analysis.shouldCloseLongPositions,
+//                            shouldCloseShort = analysis.shouldCloseShortPositions,
+//                            stockPriceAtTime = analysis.stockPriceAtTime,
+//                            timestamp = analysis.timestamp
+//                        )
+//                    )
+//                }
+//            }
+//
+//            repo.saveTriggers(*validTriggers.toTypedArray())
+//        }
+//
+//
+//        private suspend fun collectAllCharts(): List<Pair<String, StockChart?>> {
+//
+//            // List of deferred Pair<ticker, chart> (Collected asynchronously)
+//            val charts: MutableList<Deferred<Pair<String, StockChart?>>> = mutableListOf()
+//
+//            // Loop through tickers and add deferred Pair<ticker, chart> to list
+//            curWatchlist?.forEach { t ->
+//                charts.add(
+//                    coroutineScope.async(Dispatchers.IO){
+//                        // Pair<String: Ticker, StockChart?: ChartForTicker>
+//                        t to collectChartForTicker(t)
+//                    }
+//                )
+//            }
+//
+//            return charts.awaitAll()
+//        }
+//
+//
+//        private suspend fun collectChartForTicker(t: String): StockChart? {
+//
+//            // Non nullability is guaranteed  by calling function
+//
+//            var chart: StockChart? = null
+//            repo.getStockChart(
+//                ticker = t,
+//                interval = curInterval!!.serverCode,
+//                periodRange = curStrategy!!.requiredPeriodRange,
+//                prepost = curStrategy!!.requiredPrepost
+//            ).collectLatest {
+//                when (it) {
+//                    is DataResourceState.Success -> {
+//                        Log.d(tag, "Collected chart for ticker: $t")
+//
+//                        chart = StockChart(
+//                            ticker = it.data!!.data.ticker,
+//                            interval = curInterval!!,
+//                            periodRange = it.data!!.data.periodRange,
+//                            prepost = it.data!!.data.prepost,
+//                            datetime = it.data!!.data.timestamp.map { ts ->
+//
+//                                // Timestamps are in seconds
+//                                Date(ts * 1000L)
+//                            },
+//                            timestamp = it.data!!.data.timestamp,
+//                            open = it.data!!.data.open,
+//                            high = it.data!!.data.high,
+//                            low = it.data!!.data.low,
+//                            close = it.data!!.data.close,
+//                            volume = it.data!!.data.volume
+//                        )
+//                        return@collectLatest
+//                    }
+//                    is DataResourceState.Error -> {
+//                        Log.d(tag, "Failed to collect chart for ticker: $t")
+//                        return@collectLatest
+//                    }
+//                    is DataResourceState.Loading -> {
+//                        Log.d(tag, "Loading chart for ticker: $t")
+//                    }
+//                }
+//            }
+//
+//            return chart
+//        }
+//
+//
+//    }
 
 
     inner

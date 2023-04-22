@@ -10,6 +10,9 @@ fun navController(
     ticker: String? = null
 ){
     when (destination){
+        Screens.Login -> {
+            navigator.navigate(LoginScreenDestination)
+        }
         Screens.Dashboard -> {
             navigator.navigate(DashboardScreenDestination)
         }
@@ -34,6 +37,7 @@ fun navController(
 
 
 enum class Screens(val displayName: String){
+    Login("Login"),
     Dashboard("Dashboard"),
     Settings("Settings"),
     Quotes("Quotes"),

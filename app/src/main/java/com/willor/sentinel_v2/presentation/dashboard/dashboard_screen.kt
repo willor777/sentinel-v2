@@ -18,7 +18,7 @@ import com.willor.sentinel_v2.presentation.dashboard.dash_components.DashboardUi
 import com.willor.sentinel_v2.presentation.dashboard.dash_components.DashboardUiState
 import com.willor.sentinel_v2.ui.theme.MySizes
 
-@RootNavGraph(start = true)
+//@RootNavGraph(start = true)
 @Destination
 @Composable
 fun DashboardScreen(

@@ -12,7 +12,7 @@ class GetPopularWatchlistUsecase(
     private val repo: Repo
 ) {
 
-    suspend operator fun invoke(wlName: String): Flow<DataResourceState<PopularWatchlist?>> =
+    operator fun invoke(wlName: String): Flow<DataResourceState<PopularWatchlist?>> =
         repo.getPopularWatchlist(wlName).map {
             when (it) {
                 is DataResourceState.Loading -> {

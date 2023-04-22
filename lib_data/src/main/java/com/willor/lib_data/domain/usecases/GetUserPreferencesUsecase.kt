@@ -9,7 +9,7 @@ class GetUserPreferencesUsecase(
     private val repo: Repo
 ) {
 
-    suspend operator fun invoke(): Flow<DataResourceState<UserPreferences>> {
+    operator fun invoke(): Flow<DataResourceState<UserPreferences>> {
         return repo.getUserPreferences()
     }
 }

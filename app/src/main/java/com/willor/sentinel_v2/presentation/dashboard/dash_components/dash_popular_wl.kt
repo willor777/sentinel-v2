@@ -130,49 +130,6 @@ private fun WatchlistDisplay(
     }
 }
 
-//@Composable
-//private fun WatchlistDisplay(
-//    wlOptionsList: List<String>,
-//    curWatchlist: PopularWatchlist,
-//    wlDispScrollStateProvider: () -> LazyListState,
-//    onWlOptionClicked: (wlName: String) -> Unit,
-//    onTickerCardClicked: (ticker: String) -> Unit,
-//    onAddTickerClick: (ticker: String) -> Unit,
-//) {
-//
-//    val wlScrollstate = rememberLazyListState()
-//    val cScope = rememberCoroutineScope()
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxHeight(1f)
-//            .fillMaxWidth()
-//
-//    ) {
-//        // Watchlist selector
-//        DropdownOptionSelector(optionsList = wlOptionsList,
-//            curSelection = curWatchlist.watchlistData.name,
-//            onItemClick = {
-//                onWlOptionClicked(it)
-//                cScope.launch { wlScrollstate.animateScrollToItem(0) }
-//            })
-//
-//        LazyColumn(
-//            modifier = Modifier.fillMaxSize(),
-//            state = wlDispScrollStateProvider(),
-//        ) {
-//
-//            items(curWatchlist.watchlistData.tickers.size) { itemIndex ->
-//                ExpandableTickerCard(
-//                    ticker = curWatchlist.watchlistData.tickers[itemIndex],
-//                    onTickerCardClicked = onTickerCardClicked,
-//                    searchIconClicked = onAddTickerClick
-//                )
-//            }
-//        }
-//    }
-//}
-
 
 @Composable
 private fun ExpandableTickerCard(
@@ -213,8 +170,9 @@ private fun ExpandableTickerCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(curSize)
+                .fillMaxWidth(.9f)
                 .padding(
-                    MySizes.HORIZONTAL_EDGE_PADDING, MySizes.VERTICAL_CONTENT_PADDING_SMALL
+                    MySizes.HORIZONTAL_CONTENT_PADDING_SMALL, MySizes.VERTICAL_CONTENT_PADDING_SMALL
                 ),
             horizontalAlignment = Alignment.Start,
         ) {

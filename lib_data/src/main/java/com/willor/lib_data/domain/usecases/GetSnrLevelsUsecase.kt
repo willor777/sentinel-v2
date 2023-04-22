@@ -9,7 +9,7 @@ class GetSnrLevelsUsecase(
     private val repo: Repo
 ) {
 
-    suspend operator fun invoke(ticker: String): Flow<DataResourceState<StockSnrLevels?>> {
+    operator fun invoke(ticker: String): Flow<DataResourceState<StockSnrLevels?>> {
         return repo.getStockSnrLevels(ticker)
     }
 }
