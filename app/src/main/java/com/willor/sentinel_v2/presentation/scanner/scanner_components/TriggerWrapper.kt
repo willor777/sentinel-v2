@@ -1,6 +1,5 @@
 package com.willor.sentinel_v2.presentation.scanner.scanner_components
 
-import androidx.compose.runtime.Stable
 import com.willor.lib_data.domain.dataobjs.entities.TriggerEntity
 import com.willor.lib_data.domain.dataobjs.responses.stock_quote_resp.StockQuote
 

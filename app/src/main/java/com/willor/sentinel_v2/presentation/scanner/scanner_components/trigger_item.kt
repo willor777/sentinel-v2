@@ -3,25 +3,21 @@ package com.willor.sentinel_v2.presentation.scanner.scanner_components
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.willor.lib_data.domain.dataobjs.entities.TriggerEntity
 import com.willor.sentinel_v2.presentation.common.DotdotdotLoadingText
-import com.willor.sentinel_v2.presentation.common.*
+import com.willor.sentinel_v2.presentation.common.LabelValueRow
 import com.willor.sentinel_v2.ui.theme.MySizes
 import com.willor.sentinel_v2.utils.formatDoubleToTwoDecimalPlaceString
 import com.willor.sentinel_v2.utils.formatTimestampToStringDateWithTime
@@ -118,7 +114,7 @@ private fun ExpandedContent(
         )
 
         LabelValueRow(label = "Current Price:") {
-            DotdotdotLoadingText() {
+            DotdotdotLoadingText {
                 false
             }
         }

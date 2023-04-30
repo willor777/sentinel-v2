@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.willor.lib_data.domain.dataobjs.responses.uoa_page_resp.UnusualOption
 import com.willor.sentinel_v2.presentation.common.LabelValueRow

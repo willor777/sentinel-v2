@@ -2,8 +2,6 @@ package com.willor.lib_data.data.local.prefs
 
 import com.willor.lib_data.domain.dataobjs.UoaFilterOptions
 import com.willor.lib_data.utils.gson
-import com.willor.stock_analysis_lib.analysis.StrategyName
-import com.willor.stock_analysis_lib.common.CandleInterval
 
 data class UserPreferences(
     var sentinelWatchlist: List<String> = listOf(),

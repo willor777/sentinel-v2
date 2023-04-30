@@ -3,7 +3,6 @@ package com.willor.sentinel_v2.presentation.common
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive

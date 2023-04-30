@@ -2,7 +2,6 @@ package com.willor.sentinel_v2.presentation.analysts_rating_changes
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.willor.lib_data.domain.usecases.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

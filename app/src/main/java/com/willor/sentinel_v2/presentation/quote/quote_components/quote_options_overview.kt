@@ -13,11 +13,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.willor.compose_value_range_bar.ValueRangeBar
-import com.willor.compose_value_range_bar.ValueRangeBarSettings
 import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.responses.options_overview_resp.OptionsOverview
 import com.willor.sentinel_v2.presentation.common.LabelValueRow
+import com.willor.sentinel_v2.presentation.common.ValueRangeBar
+import com.willor.sentinel_v2.presentation.common.ValueRangeBarSettings
 import com.willor.sentinel_v2.ui.theme.GainGreen
 import com.willor.sentinel_v2.ui.theme.LossRed
 import com.willor.sentinel_v2.ui.theme.MySizes

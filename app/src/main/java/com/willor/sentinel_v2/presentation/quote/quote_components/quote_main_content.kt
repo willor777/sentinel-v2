@@ -10,12 +10,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.willor.compose_value_range_bar.ValueRangeBar
-import com.willor.compose_value_range_bar.ValueRangeBarSettings
 import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.dataobjs.responses.etf_quote_resp.EtfQuote
 import com.willor.lib_data.domain.dataobjs.responses.stock_quote_resp.StockQuote
 import com.willor.sentinel_v2.presentation.common.LabelValueRow
+import com.willor.sentinel_v2.presentation.common.ValueRangeBar
+import com.willor.sentinel_v2.presentation.common.ValueRangeBarSettings
 import com.willor.sentinel_v2.ui.theme.MySizes
 import com.willor.sentinel_v2.utils.*
 
@@ -355,7 +355,7 @@ private fun EtfQuoteContent(
             // Yield Percentage
             LabelValueRow(
                 label = "Yield",
-                value = "%${quote.yieldPercentage.toString()}"
+                value = "%${quote.yieldPercentage}"
             )
 
             // YTD Return

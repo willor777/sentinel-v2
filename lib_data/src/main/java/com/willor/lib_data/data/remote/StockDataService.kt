@@ -1,6 +1,5 @@
 package com.willor.lib_data.data.remote
 
-import com.willor.lib_data.domain.dataobjs.UoaFilterOptions
 import com.willor.lib_data.domain.dataobjs.post_bodies.LoginUserBody
 import com.willor.lib_data.domain.dataobjs.post_bodies.RegisterNewUserBody
 import com.willor.lib_data.domain.dataobjs.responses.authentication_resp.LoginResponse
@@ -17,7 +16,6 @@ import com.willor.lib_data.domain.dataobjs.responses.stock_competitors_resp.Stoc
 import com.willor.lib_data.domain.dataobjs.responses.stock_quote_resp.StockQuote
 import com.willor.lib_data.domain.dataobjs.responses.stock_snr_levels_resp.StockSnrLevels
 import com.willor.lib_data.domain.dataobjs.responses.uoa_page_resp.UoaPage
-import kotlinx.coroutines.runBlocking
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

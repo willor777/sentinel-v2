@@ -1,10 +1,6 @@
 package com.willor.lib_data.data.local.db
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.willor.lib_data.domain.dataobjs.entities.TriggerEntity
 import kotlinx.coroutines.flow.Flow
 

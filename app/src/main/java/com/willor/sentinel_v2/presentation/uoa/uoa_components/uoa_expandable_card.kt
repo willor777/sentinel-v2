@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.willor.lib_data.domain.dataobjs.UoaFilterOptions
@@ -24,7 +23,6 @@ import com.willor.sentinel_v2.presentation.common.LabelValueRow
 import com.willor.sentinel_v2.ui.theme.MySizes
 import com.willor.sentinel_v2.utils.formatDoubleToTwoDecimalPlaceString
 import com.willor.sentinel_v2.utils.formatIntegerToString
-import kotlin.math.exp
 
 
 @Composable

@@ -2,13 +2,12 @@ package com.willor.lib_data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.willor.lib_data.data.RepoImpl
 import com.willor.lib_data.data.local.db.StockDataDb
 import com.willor.lib_data.data.local.prefs.DatastorePreferencesManager
 import com.willor.lib_data.data.remote.RetrofitApi
 import com.willor.lib_data.data.remote.StockDataService
 import com.willor.lib_data.domain.Repo
-import com.willor.lib_data.data.RepoImpl
-import com.willor.lib_data.data.UoaPagingSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

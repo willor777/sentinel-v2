@@ -9,6 +9,4 @@ import dagger.hilt.android.HiltAndroidApp
  * with Dagger-Hilt Dependency Injection Framework
  */
 @HiltAndroidApp
-class MainApplication: Application() {
-
-}
+class MainApplication: Application()

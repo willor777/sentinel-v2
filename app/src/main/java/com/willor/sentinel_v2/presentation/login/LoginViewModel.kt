@@ -87,7 +87,7 @@ class LoginViewModel @Inject constructor(
      */
     private fun initialLoad() {
 
-        viewModelScope.launch(){
+        viewModelScope.launch {
 
             // Load user prefs
             usecases.getUserPreferencesUsecase().collectLatest {
