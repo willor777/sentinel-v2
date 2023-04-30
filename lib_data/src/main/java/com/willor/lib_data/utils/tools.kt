@@ -1,6 +1,8 @@
 package com.willor.lib_data.utils
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.google.gson.Gson
 
 
@@ -16,4 +18,13 @@ fun logException(tag: String, exception: Exception, extraInfo: String? = null){
     }
 
     Log.w(tag, msg)
+}
+
+
+fun showToast(
+    message: String,
+    contextProvider: () -> Context,
+    toastLength: Int = Toast.LENGTH_SHORT
+) {
+    Toast.makeText(contextProvider(), message, toastLength).show()
 }

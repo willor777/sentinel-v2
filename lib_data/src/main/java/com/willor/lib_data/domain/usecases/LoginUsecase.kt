@@ -9,7 +9,7 @@ class LoginUsecase(
     private val repo: Repo
 ) {
 
-    operator fun invoke(email: String, password: String): Flow<DataResourceState<LoginResponse>> {
-        return repo.loginUser(email, password)
+    operator fun invoke(username: String, password: String): Flow<DataResourceState<LoginResponse>> {
+        return repo.loginUser(username, password)
     }
 }

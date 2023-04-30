@@ -10,8 +10,8 @@ class RegisterUsecase(
 ) {
 
     operator fun invoke(
-        email: String, password: String
+        username: String, password: String
     ): Flow<DataResourceState<RegistrationResponse>> {
-        return repo.registerNewUser(email, password)
+        return repo.registerNewUser(username, password)
     }
 }

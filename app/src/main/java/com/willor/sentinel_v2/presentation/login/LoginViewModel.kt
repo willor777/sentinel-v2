@@ -2,11 +2,17 @@ package com.willor.sentinel_v2.presentation.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.willor.lib_data.data.local.prefs.UserPreferences
+import com.willor.lib_data.domain.dataobjs.DataResourceState
 import com.willor.lib_data.domain.usecases.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -16,11 +22,19 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val tag = LoginViewModel::class.java.simpleName
+
+    // This doesn't really need to be a stateflow, It is only used here in the view model
+    private val _userPrefs = MutableStateFlow(UserPreferences())
+    private val userPrefs get() = _userPrefs.asStateFlow()
+
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState get() = _uiState.asStateFlow()
 
     fun handleUiEvent(event: LoginUiEvents) {
         when (event) {
+            is LoginUiEvents.InitialLoad -> {
+                initialLoad()
+            }
             is LoginUiEvents.LoginEmailTextChanged -> {
                 updateLoginEmailText(event.text)
             }
@@ -31,7 +45,11 @@ class LoginViewModel @Inject constructor(
                 updateLoginViewPassword()
             }
             is LoginUiEvents.LoginSubmitClicked -> {
-                loginUser()
+                loginUser(
+                    onSuccess = event.onSuccess,
+                    onError = event.onError,
+                    onLoading = event.onLoading
+                )
             }
             is LoginUiEvents.GoToRegisterClicked -> {
                 updateShowRegister()
@@ -51,20 +69,138 @@ class LoginViewModel @Inject constructor(
             is LoginUiEvents.RegisterViewConfirmPasswordClicked -> {
                 updateRegisterViewConfirmPassword()
             }
-            is LoginUiEvents.RegisterSubmitClicked -> TODO()
+            is LoginUiEvents.RegisterSubmitClicked -> {
+                registerUser(
+                    onLoading = event.onLoading,
+                    onSuccess = event.onSuccess,
+                    onError = event.onError
+                )
+            }
             is LoginUiEvents.GoToLoginClicked -> {
                 updateShowLogin()
             }
-
         }
     }
 
-    private fun loginUser(){
+    /**
+     * Loads User Prefs
+     */
+    private fun initialLoad() {
 
+        viewModelScope.launch(){
+
+            // Load user prefs
+            usecases.getUserPreferencesUsecase().collectLatest {
+                when (it){
+                    is DataResourceState.Success -> {
+                        _userPrefs.value = it.data
+
+                        if (it.data.username.isNotEmpty()){
+                            _uiState.update { state ->
+                                state.copy(loginEmailTextEditText = it.data.username)
+                            }
+                        }
+                    }
+                    else -> {
+                        Log.d(tag, "initialLoad() Failed to load user prefs")
+                    }
+                }
+            }
+        }
     }
 
-    private fun registerUser(){
-        // Check that fields
+
+    /*
+    * TODO
+    *   - Default username + password has been added below for easier development
+    * */
+    private fun loginUser(onSuccess: () -> Unit, onError: () -> Unit, onLoading: () -> Unit){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            // TODO Un-comment this out when in production Mode
+//            usecases.loginUsecase(
+//                _uiState.value.loginEmailTextEditText,
+//                _uiState.value.loginPasswordTextActual
+//            ).collectLatest {
+
+//            // TODO And comment this out
+            usecases.loginUsecase(
+                username = "scoobydoo11",
+                password = "Qwerty1!"
+            ).collectLatest {
+
+
+            when (it) {
+                    is DataResourceState.Success -> {
+                        Log.d(tag, "it.data:!!!!!!!!!!!!!!!!! ${it.data}")
+                        // Save api key + expiry
+                        val curPrefs = _userPrefs.value
+                        curPrefs.apiKey = it.data.token
+                        curPrefs.apiKeyExpiry = it.data.expiresAt
+                        usecases.saveUserPreferencesUsecase(curPrefs)
+
+                        // Call the onSuccess callback
+                        viewModelScope.launch(Dispatchers.Main){
+                            onSuccess()
+                        }
+                    }
+                    is DataResourceState.Loading -> {
+                        viewModelScope.launch(Dispatchers.Main){
+                            onLoading()
+                        }
+                    }
+                    else -> {
+                        viewModelScope.launch(Dispatchers.Main){
+                            onError()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Registers user + on success: Saves user name to userprefs + changes to login
+     */
+    private fun registerUser(onSuccess: () -> Unit, onError: () -> Unit, onLoading: () -> Unit){
+        // Check the fields (verify username and password)
+
+        // Submit data
+        viewModelScope.launch(Dispatchers.IO){
+            usecases.registerUsecase(
+                _uiState.value.registerEmailText,
+                _uiState.value.registerPasswordTextActual
+            ).collectLatest {
+                    when (it){
+                        is DataResourceState.Success -> {
+                            _uiState.update  { state ->
+                                state.copy(
+                                    loginEmailTextEditText = _uiState.value.registerEmailText,
+                                    isRegistering = false           // This should switch it to Login
+                                )
+                            }
+
+                            // Update user prefs
+                            val cur = _userPrefs.value
+                            cur.username = _uiState.value.registerEmailText
+                            usecases.saveUserPreferencesUsecase(cur)
+
+                            viewModelScope.launch(Dispatchers.Main) { onSuccess() }
+                        }
+                        is DataResourceState.Loading -> {
+                            viewModelScope.launch(Dispatchers.Main) { onLoading() }
+                        }
+                        is DataResourceState.Error -> {
+                            viewModelScope.launch(Dispatchers.Main) { onError() }
+                        }
+                    }
+            }
+
+        }
+
+
+
+
     }
 
     private fun updateRegisterViewPassword() {

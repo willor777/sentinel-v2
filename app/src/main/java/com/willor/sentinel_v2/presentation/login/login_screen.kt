@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,7 @@ import com.airbnb.lottie.compose.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.willor.lib_data.utils.showToast
 import com.willor.sentinel_v2.R
 import com.willor.sentinel_v2.presentation.common.*
 import com.willor.sentinel_v2.ui.theme.MySizes
@@ -51,7 +53,7 @@ fun LoginScreen(
     LoginScreenContent(
         isRegistering,
         uiStateProvider = { screenState.value },
-        navDrawerDestinationClicked = {
+        navigationCalled = {
             navController(navigator, it)
         },
         onUiEvent = viewModel::handleUiEvent
@@ -63,9 +65,10 @@ fun LoginScreen(
 fun LoginScreenContent(
     isRegistering: Boolean,
     uiStateProvider: () -> LoginUiState,
-    navDrawerDestinationClicked: (Screens) -> Unit,
-    onUiEvent: (LoginUiEvents) -> Unit
-) {
+    navigationCalled: (Screens) -> Unit,
+    onUiEvent: (LoginUiEvents) -> Unit,
+
+    ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scaffoldState = rememberScaffoldState(drawerState)
     val coroutineScope = rememberCoroutineScope()
@@ -81,7 +84,7 @@ fun LoginScreenContent(
         drawerContent = {
             NavDrawer(
                 currentDestination = Screens.Dashboard,
-                destinationClicked = { navDrawerDestinationClicked(it) }
+                destinationClicked = { navigationCalled(it) }
             )
         },
         drawerGesturesEnabled = true
@@ -107,13 +110,13 @@ fun LoginScreenContent(
 
                 AnimatedContent(
                     targetState = isRegistering,
-                ) {ir ->
+                ) { ir ->
 
-                    if (ir){
+                    if (ir) {
                         RegisterContent(uiStateProvider = uiStateProvider, onUiEvent = onUiEvent)
-                    }
-                    else {
-                        LoginContent(uiStateProvider = uiStateProvider, onUiEvent = onUiEvent)
+                    } else {
+                        LoginContent(uiStateProvider = uiStateProvider, onUiEvent = onUiEvent,
+                            navigateAfterSuccessfulLogin = { navigationCalled(Screens.Dashboard) })
                     }
                 }
             }
@@ -121,12 +124,19 @@ fun LoginScreenContent(
     }
 }
 
+/* TODO
+*   - When "or register..." link is clicked, the LoginContent should exit slide left and the
+*   RegisterContent should enter slide left
+*   - More info is needed when Login Error happens
+* */
 @Composable
 fun LoginContent(
     uiStateProvider: () -> LoginUiState,
     onUiEvent: (LoginUiEvents) -> Unit,
+    navigateAfterSuccessfulLogin: () -> Unit
 ) {
 
+    val curContext = LocalContext.current
     val uiState = uiStateProvider()
     val pw = if (uiState.loginViewPassword) {
         uiState.loginPasswordTextActual
@@ -199,7 +209,32 @@ fun LoginContent(
 
 
         Button(
-            onClick = { onUiEvent(LoginUiEvents.LoginSubmitClicked) },
+            onClick = {
+                onUiEvent(
+                    LoginUiEvents.LoginSubmitClicked(
+                        onSuccess = {
+                            showToast(
+                                message = "Login Successful!",
+                                contextProvider = { curContext }
+                            )
+                            navigateAfterSuccessfulLogin()
+                        },
+                        onError = {
+                            showToast(
+                                message = "Login Failed!",
+                                contextProvider = { curContext }
+                            )
+                        },
+                        onLoading = {
+                            // Not really using the Loading state right now, it's' fast so not needed
+                            showToast(
+                                message = "Login Requested",
+                                contextProvider = { curContext }
+                            )
+                        }
+                    )
+                )
+            },
             shape = RoundedCornerShape(5.dp),
             colors = ButtonDefaults.buttonColors(Color.Blue.copy(blue = .5f))
         ) {
@@ -211,13 +246,17 @@ fun LoginContent(
 }
 
 
-// TODO When "or register..." link is clicked, the LoginContent should exit slide left
-//  and the RegisterContent should enter slide left
+/* TODO
+*   - When "or register..." link is clicked, the LoginContent should exit slide left and the
+*   RegisterContent should enter slide left
+*   - onError lambda function below (on RegistrationSubmit) needs info about why it failed
+* */
 @Composable
 fun RegisterContent(
     uiStateProvider: () -> LoginUiState,
     onUiEvent: (LoginUiEvents) -> Unit
 ) {
+    val curContext = LocalContext.current
     val uiState = uiStateProvider()
     val pw = if (uiState.registerViewPassword) {
         uiState.registerPasswordTextActual
@@ -326,7 +365,27 @@ fun RegisterContent(
 
 
         Button(
-            onClick = { onUiEvent(LoginUiEvents.LoginSubmitClicked) },
+            onClick = {
+                onUiEvent(
+                    LoginUiEvents.RegisterSubmitClicked(
+                        onSuccess = {
+                            showToast(
+                                message = "Registration Successful",
+                                contextProvider = { curContext }
+                            )
+                        },
+                        onLoading = {
+
+                        },
+                        onError = {
+                            showToast(
+                                message = "Login Failed!",        // TODO More Info For User On Fail
+                                contextProvider = { curContext }
+                            )
+                        }
+                    )
+                )
+            },
             shape = RoundedCornerShape(5.dp),
             colors = ButtonDefaults.buttonColors(Color.Blue.copy(blue = .5f))
         ) {

@@ -1,5 +1,6 @@
 package com.willor.lib_data.data
 
+import android.util.Log
 import androidx.paging.LoadState
 import com.willor.lib_data.data.local.db.StockDataDb
 import com.willor.lib_data.data.local.prefs.DatastorePreferencesManager
@@ -32,6 +33,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
+
+/* TODO
+*   There is a bug with the text fields. Can't explain it easily. To find it, enter a password,
+*   then click between 2 letters and type a character and you will see what i mean
+* */
 class RepoImpl(
     private val api: StockDataService,
     private val db: StockDataDb,
@@ -80,6 +86,7 @@ class RepoImpl(
                 val successfulRes = res.body()!!
                 emit(DataResourceState.Success(successfulRes))
             } else {
+
                 emit(DataResourceState.Error("Failed to login user"))
             }
 

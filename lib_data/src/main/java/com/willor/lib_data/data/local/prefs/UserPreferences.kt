@@ -10,7 +10,9 @@ data class UserPreferences(
     var lastPopularWatchlistSelected: String = "GAINERS",
     var uoaSortAsc: Boolean = false,
     var uoaSortBy: UoaFilterOptions = UoaFilterOptions.Volume_OI_Ratio,
-    var scannerStrategy: StrategyName = StrategyName.TEST_STRATEGY,
+    var username: String = "",
+    var apiKey: String = "",
+    var apiKeyExpiry: Long = 0,
 ){
     companion object{
         fun toJson(userPrefs: UserPreferences): String{

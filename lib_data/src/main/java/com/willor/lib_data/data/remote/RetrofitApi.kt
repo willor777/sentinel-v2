@@ -1,5 +1,6 @@
 package com.willor.lib_data.data.remote
 
+import com.google.gson.GsonBuilder
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -32,7 +33,10 @@ object RetrofitApi {
                 .build()
         )
         .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(
+            GsonBuilder().setLenient()
+                .create()
+        ))
         .build()
 
 
