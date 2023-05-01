@@ -1,8 +1,10 @@
 package com.willor.lib_data.data
 
+import android.util.Log
 import com.willor.lib_data.data.local.db.StockDataDb
 import com.willor.lib_data.data.local.prefs.DatastorePreferencesManager
 import com.willor.lib_data.data.local.prefs.UserPreferences
+import com.willor.lib_data.data.remote.RetrofitApi
 import com.willor.lib_data.data.remote.StockDataService
 import com.willor.lib_data.domain.Repo
 import com.willor.lib_data.domain.dataobjs.DataResourceState
@@ -70,6 +72,9 @@ class RepoImpl(
         }
     }
 
+    /**
+     * Login user + add api key to Retrofit as Header
+     */
     override fun loginUser(
         email: String,
         password: String
@@ -82,6 +87,7 @@ class RepoImpl(
 
             if (res.isSuccessful) {
                 val successfulRes = res.body()!!
+                RetrofitApi.setApiKey(successfulRes.token)
                 emit(DataResourceState.Success(successfulRes))
             } else {
 
@@ -143,7 +149,7 @@ class RepoImpl(
 
                 // Request new chart
                 val chartRequest = api.getStockChart(
-                    ticker, interval, periodRange, prepost
+                    ticker, interval, periodRange, prepost, RetrofitApi.getApiKey()
                 )
 
                 if (chartRequest.isSuccessful) {
@@ -184,7 +190,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getMajorFutures()
+                val resp = api.getMajorFutures(RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))
@@ -211,7 +217,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getMajorIndices()
+                val resp = api.getMajorIndices(RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))
@@ -239,7 +245,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getStockCompetitors(ticker)
+                val resp = api.getStockCompetitors(ticker, RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))
@@ -267,7 +273,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getStockSnrLevels(ticker)
+                val resp = api.getStockSnrLevels(ticker, RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))
@@ -294,7 +300,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getOptionsOverview(ticker)
+                val resp = api.getOptionsOverview(ticker, RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))
@@ -325,7 +331,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getUnusualOptionsActivity(page, sortAsc, sortBy.key)
+                val resp = api.getUnusualOptionsActivity(page, sortAsc, sortBy.key, RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))
@@ -352,7 +358,7 @@ class RepoImpl(
         sortBy: UoaFilterOptions
     ): UoaPage? {
         try {
-            val req = api.getUnusualOptionsActivity(page, sortAsc, sortBy.key)
+            val req = api.getUnusualOptionsActivity(page, sortAsc, sortBy.key, RetrofitApi.getApiKey())
             if (req.isSuccessful) {
                 return req.body()!!
             }
@@ -370,9 +376,10 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getStockQuote(ticker)
+                val resp = api.getStockQuote(ticker, RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
+                    Log.d("TESTING", "Quote: ${resp.raw()}")
                     emit(DataResourceState.Success(resp.body()))
                 } else {
                     emit(
@@ -398,7 +405,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getEtfQuote(ticker)
+                val resp = api.getEtfQuote(ticker, RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))
@@ -425,7 +432,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getAllAvailablePopularWatchlistOptions()
+                val resp = api.getAllAvailablePopularWatchlistOptions(RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))
@@ -452,7 +459,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getPopularWatchlist(wlName)
+                val resp = api.getPopularWatchlist(wlName, RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))
@@ -480,7 +487,7 @@ class RepoImpl(
             try {
                 emit(DataResourceState.Loading())
 
-                val resp = api.getPopularWatchlistsBySearchTags(searchTags)
+                val resp = api.getPopularWatchlistsBySearchTags(searchTags, RetrofitApi.getApiKey())
 
                 if (resp.isSuccessful) {
                     emit(DataResourceState.Success(resp.body()))

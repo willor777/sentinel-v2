@@ -12,8 +12,9 @@ object RetrofitApi {
     // Google Cloud App Engine Url: https://das-ktstockdata-api.uc.r.appspot.com
     // Heroku Salesforce Cloud Url: https://das-ktstockdata.herokuapp.com/
     const val BASE_URL = "https://das-ktstockdata-api.uc.r.appspot.com"
+    private var apiKey = ""
 
-    private val retrofit = Retrofit.Builder()
+    private val retrofitInstance = Retrofit.Builder()
         .client(
             OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
@@ -33,14 +34,23 @@ object RetrofitApi {
                 .build()
         )
         .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create(
-            GsonBuilder().setLenient()
-                .create()
-        ))
+        .addConverterFactory(
+            GsonConverterFactory.create(
+                GsonBuilder().setLenient()
+                    .create()
+            )
+        )
         .build()
 
+    val stockDataService = retrofitInstance.create(StockDataService::class.java)
 
-    val stockDataService = retrofit.create(StockDataService::class.java)
 
+    fun setApiKey(apikey: String){
+        apiKey = apikey
+    }
+
+    fun getApiKey(): String {
+        return "Bearer $apiKey"
+    }
 
 }

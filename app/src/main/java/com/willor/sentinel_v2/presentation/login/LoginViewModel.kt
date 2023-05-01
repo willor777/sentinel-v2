@@ -125,14 +125,13 @@ class LoginViewModel @Inject constructor(
 
 //            // TODO And comment this out
             usecases.loginUsecase(
-                username = "scoobydoo11",
-                password = "Qwerty1!"
+                username = "scoobydoo33",
+                password = "Qwerty11!"
             ).collectLatest {
 
 
             when (it) {
                     is DataResourceState.Success -> {
-                        Log.d(tag, "it.data:!!!!!!!!!!!!!!!!! ${it.data}")
                         // Save api key + expiry
                         val curPrefs = _userPrefs.value
                         curPrefs.apiKey = it.data.token

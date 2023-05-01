@@ -140,6 +140,7 @@ class DashboardViewModel @Inject constructor(
             // Cast userPrefs and load the watchlist last selected
             val userPrefs = (_uiState.value.userPrefs as DataResourceState.Success).data
             loadWatchlist(userPrefs.lastPopularWatchlistSelected)
+            Log.d(tag, "Watchlist Loaded")
         }
     }
 
@@ -200,6 +201,24 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             useCases.getMajorFuturesUsecase().collectLatest {
+                
+                when (it) {
+                    is DataResourceState.Success -> {
+                        Log.d("_AUTH", "Major Futures Data SUCCESS: $it")
+
+                    }
+                    is DataResourceState.Error -> {
+                        Log.d("_AUTH", "Major Futures Data ERROR: $it\n" +
+                                "MSG: ${it.msg}\n" +
+                                "EXC: ${it.exception}")
+
+                    }
+                    is DataResourceState.Loading -> {
+                        Log.d("_AUTH", "Major Futures Data LOADING: $it")
+
+                    }
+                }
+                Log.d(tag, "Major Futures Data: $it")
 
                 _uiState.value = _uiState.value.copy(
                     majorFutures = it
@@ -254,10 +273,6 @@ class DashboardViewModel @Inject constructor(
 
             // Load popular watchlist
             useCases.getPopularWatchlistUsecase(wlName).collectLatest {
-                _uiState.value = _uiState.value.copy(
-                    popularWatchlistDisplayed = it
-                )
-
                 when (it) {
                     is DataResourceState.Success -> {
                         Log.d(tag, "PopularWatchlist Success!")
@@ -272,6 +287,9 @@ class DashboardViewModel @Inject constructor(
                         )
                     }
                 }
+                _uiState.value = _uiState.value.copy(
+                    popularWatchlistDisplayed = it
+                )
             }
         }
     }

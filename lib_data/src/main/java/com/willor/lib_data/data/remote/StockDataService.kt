@@ -17,10 +17,7 @@ import com.willor.lib_data.domain.dataobjs.responses.stock_quote_resp.StockQuote
 import com.willor.lib_data.domain.dataobjs.responses.stock_snr_levels_resp.StockSnrLevels
 import com.willor.lib_data.domain.dataobjs.responses.uoa_page_resp.UoaPage
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 
 @Suppress("unused")
@@ -44,56 +41,85 @@ interface StockDataService {
         @Query("ticker") ticker: String,
         @Query("interval") interval: String,
         @Query("periodRange") periodRange: String,
-        @Query("prepost") prepost: Boolean
+        @Query("prepost") prepost: Boolean,
+        @Header("Authorization") apikey: String
     ): Response<StockChart?>
 
 
     @GET("/auth-v1/misc/major-futures")
-    suspend fun getMajorFutures(): Response<MajorFutures?>
+    suspend fun getMajorFutures(
+        @Header("Authorization") apikey: String
+    ): Response<MajorFutures?>
 
 
     @GET("/auth-v1/misc/major-indices")
-    suspend fun getMajorIndices(): Response<MajorIndices?>
+    suspend fun getMajorIndices(
+        @Header("Authorization") apikey: String
+    ): Response<MajorIndices?>
 
 
     @GET("/auth-v1/misc/major-competitors")
-    suspend fun getStockCompetitors(@Query("ticker") ticker: String): Response<StockCompetitors?>
+    suspend fun getStockCompetitors(
+        @Query("ticker") ticker: String,
+        @Header("Authorization") apikey: String
+    ): Response<StockCompetitors?>
 
 
     @GET("/auth-v1/misc/snr-levels")
-    suspend fun getStockSnrLevels(@Query("ticker") ticker: String): Response<StockSnrLevels?>
+    suspend fun getStockSnrLevels(
+        @Query("ticker") ticker: String,
+        @Header("Authorization") apikey: String
+    ): Response<StockSnrLevels?>
 
 
     @GET("/auth-v1/options/overview")
-    suspend fun getOptionsOverview(@Query("ticker") ticker: String): Response<OptionsOverview?>
+    suspend fun getOptionsOverview(
+        @Query("ticker") ticker: String, @Header("Authorization") apikey: String
+    ): Response<OptionsOverview?>
 
 
     @GET("/auth-v1/options/uoa")
     suspend fun getUnusualOptionsActivity(
         @Query("page") page: Int = 0,
         @Query("sort_asc") sortAsc: Boolean = true,
-        @Query("sort_by") sortBy: String
+        @Query("sort_by") sortBy: String,
+        @Header("Authorization") apikey: String
+
     ): Response<UoaPage?>
 
 
     @GET("/auth-v1/quote/stock")
-    suspend fun getStockQuote(@Query("ticker") ticker: String): Response<StockQuote?>
+    suspend fun getStockQuote(
+        @Query("ticker") ticker: String,
+        @Header("Authorization") apikey: String
+    ): Response<StockQuote?>
 
 
     @GET("/auth-v1/quote/etf")
-    suspend fun getEtfQuote(@Query("ticker") ticker: String): Response<EtfQuote?>
+    suspend fun getEtfQuote(
+        @Query("ticker") ticker: String,
+        @Header("Authorization") apikey: String
+    ): Response<EtfQuote?>
 
 
     @GET("/auth-v1/watchlists/available-lists")
-    suspend fun getAllAvailablePopularWatchlistOptions(): Response<PopularWatchlistOptions?>
+    suspend fun getAllAvailablePopularWatchlistOptions(
+        @Header("Authorization") apikey: String
+    ): Response<PopularWatchlistOptions?>
 
 
     @GET("/auth-v1/watchlists/list")
-    suspend fun getPopularWatchlist(@Query("name") wlName: String): Response<PopularWatchlist?>
+    suspend fun getPopularWatchlist(
+        @Query("name") wlName: String,
+        @Header("Authorization") apikey: String
+    ): Response<PopularWatchlist?>
 
 
     @GET("/auth-v1/watchlists/search")
-    suspend fun getPopularWatchlistsBySearchTags(@Query("searchTags") searchTags: String): Response<PopularWatchlistSearch?>
+    suspend fun getPopularWatchlistsBySearchTags(
+        @Query("searchTags") searchTags: String,
+        @Header("Authorization") apikey: String
+    ): Response<PopularWatchlistSearch?>
 
 }
 
