@@ -17,11 +17,11 @@ object RetrofitApi {
     private val retrofitInstance = Retrofit.Builder()
         .client(
             OkHttpClient.Builder()
-                .retryOnConnectionFailure(true)
                 .readTimeout(10000, TimeUnit.MILLISECONDS)
                 .connectTimeout(10000, TimeUnit.MILLISECONDS)
                 .callTimeout(20000, TimeUnit.MILLISECONDS)
                 .followRedirects(true)
+                .retryOnConnectionFailure(true)
                 .connectionSpecs(
                     listOf(
 
