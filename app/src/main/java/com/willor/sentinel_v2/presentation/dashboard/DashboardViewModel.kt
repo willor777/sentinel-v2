@@ -134,6 +134,7 @@ class DashboardViewModel @Inject constructor(
 
             // Wait for userPrefs to be loaded
             while (this.isActive && _uiState.value.userPrefs !is DataResourceState.Success) {
+                Log.d(tag, "loadDefaultWatchlist() waiting for UserPrefs!!!!!!!!!!")
                 delay(500)
             }
 
@@ -201,23 +202,7 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             useCases.getMajorFuturesUsecase().collectLatest {
-                
-                when (it) {
-                    is DataResourceState.Success -> {
-                        Log.d("_AUTH", "Major Futures Data SUCCESS: $it")
 
-                    }
-                    is DataResourceState.Error -> {
-                        Log.d("_AUTH", "Major Futures Data ERROR: $it\n" +
-                                "MSG: ${it.msg}\n" +
-                                "EXC: ${it.exception}")
-
-                    }
-                    is DataResourceState.Loading -> {
-                        Log.d("_AUTH", "Major Futures Data LOADING: $it")
-
-                    }
-                }
                 Log.d(tag, "Major Futures Data: $it")
 
                 _uiState.value = _uiState.value.copy(
@@ -270,7 +255,7 @@ class DashboardViewModel @Inject constructor(
      */
     private fun loadWatchlist(wlName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-
+            Log.d(tag, "loadWatchlist() called!")
             // Load popular watchlist
             useCases.getPopularWatchlistUsecase(wlName).collectLatest {
                 when (it) {
