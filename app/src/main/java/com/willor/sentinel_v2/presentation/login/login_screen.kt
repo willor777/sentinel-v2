@@ -28,10 +28,10 @@ import com.airbnb.lottie.compose.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.willor.lib_data.utils.showToast
 import com.willor.sentinel_v2.R
 import com.willor.sentinel_v2.presentation.common.*
 import com.willor.sentinel_v2.ui.theme.MySizes
+import com.willor.sentinel_v2.utils.showToast
 
 
 /*

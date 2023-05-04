@@ -1,5 +1,7 @@
 package com.willor.sentinel_v2.utils
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import com.willor.sentinel_v2.ui.theme.GainGreen
 import com.willor.sentinel_v2.ui.theme.LossRed
@@ -109,6 +111,16 @@ fun dateStringFromTimestamp(ts: Long): String{
     return sdf.format(Date(ts))
 }
 
+
+
+
+fun showToast(
+    message: String,
+    contextProvider: () -> Context,
+    toastLength: Int = Toast.LENGTH_SHORT
+) {
+    Toast.makeText(contextProvider(), message, toastLength).show()
+}
 
 
 
