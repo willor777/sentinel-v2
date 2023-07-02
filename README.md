@@ -1,2 +1,2 @@
 
-<h1>Started Project on 10-13-2022</h1>
+Project has been moved to new repo: 'project-stock-sentinel'
